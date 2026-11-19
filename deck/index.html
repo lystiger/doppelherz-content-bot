@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doppelherz AI Claude</title>
+<!--
+  Deck bài test Quản lý dự án AI Claude. Bố cục theo deck KOC Discovery 2.0:
+  một slide = một hình lớn hoặc một con số lớn, tối đa khoảng 20 chữ.
+  Màu theo logo Doppelherz (site/DESIGN.md): giấy #F7F2EA, mực #16130F, đỏ #C8102E,
+  tim đỏ #EC1C2D chỉ dùng cho logo, vàng #C3A063 cho đường kẻ. Newsreader + Be Vietnam Pro.
+  Phím: mũi tên / PageUp / PageDown / Space chuyển slide.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F7F2EA; --paper-white: #FFFDF9; --ink: #16130F; --muted: #5C554C;
+  --action: #C8102E; --heart: #EC1C2D; --pale: #F6E3E1; --border: #E7DCC9;
+  --gold: #C3A063; --gold-text: #7D5F24; --green: #2F5D50; --green-soft: #DCE8E2;
+  --warn-bg: #FBEFD6; --warn-ink: #6E4510;
+  --serif: "Newsreader", Georgia, serif; --sans: "Be Vietnam Pro", system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-snap-type: y proximity; }
+body { background: #1D1916; color: var(--ink); font-family: var(--sans); font-variant-numeric: tabular-nums lining-nums; }
+.slide {
+  width: min(100vw - 32px, 1280px); aspect-ratio: 16 / 9; margin: 24px auto;
+  background: var(--paper); border-radius: 6px; overflow: hidden;
+  display: grid; grid-template-columns: 34% 1fr; gap: 44px; align-items: center;
+  padding: 52px 60px; position: relative; scroll-snap-align: center;
+}
+.slide::before { content: ""; position: absolute; left: 60px; right: 60px; top: 0; height: 4px; background: linear-gradient(90deg, var(--ink) 0 50%, var(--heart) 50% 100%); }
+.slide.full { grid-template-columns: 1fr; text-align: center; }
+.slide > * { min-height: 0; max-height: 100%; }
+.slide > img.shot { height: 100%; }
+.k { font-size: 15px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-text); margin-bottom: 14px; }
+h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.015em; line-height: 1.08; text-wrap: balance; }
+h1 { font-size: 66px; }
+h2 { font-size: 44px; }
+h1 em, h2 em { font-style: italic; color: var(--action); font-weight: 500; }
+p.s { color: var(--muted); font-size: 20px; line-height: 1.45; margin-top: 16px; }
+.no { position: absolute; right: 24px; bottom: 16px; font-size: 13px; color: var(--muted); }
+.foot { position: absolute; left: 60px; bottom: 16px; font-size: 13px; color: var(--muted); }
+.shot { width: 100%; max-height: 100%; object-fit: contain; object-position: top; border-radius: 6px; border: 1px solid var(--border); box-shadow: 0 18px 40px -24px rgba(22,19,15,.45); background: #fff; display: block; }
+.big { font-family: var(--serif); font-weight: 600; font-size: 128px; line-height: 1; color: var(--action); }
+.big small { font-size: .36em; color: var(--muted); font-weight: 500; }
+.big .ink { color: var(--ink); }
+
+/* hero */
+.hero { grid-template-columns: 1.05fr 1fr; }
+.mark { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; font-family: var(--serif); font-size: 24px; font-weight: 600; }
+.pins { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+.pins img { width: 100%; border-radius: 14px; box-shadow: 0 18px 40px -24px rgba(22,19,15,.5); }
+.pins img:nth-child(2) { margin-top: 48px; }
+.who { margin-top: 30px; font-size: 17px; color: var(--muted); }
+.who b { color: var(--ink); }
+
+/* metrics */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+.m { background: var(--paper-white); border: 1px solid var(--border); border-radius: 6px; padding: 22px 20px; text-align: left; }
+.m b { font-family: var(--serif); font-size: 54px; font-weight: 600; line-height: 1; color: var(--action); display: block; }
+.m b small { font-size: .42em; color: var(--muted); font-weight: 500; }
+.m span { font-size: 17px; color: var(--muted); display: block; margin-top: 10px; line-height: 1.4; }
+.m.ink b { color: var(--ink); }
+
+/* bars */
+.years { display: grid; gap: 18px; width: 100%; }
+.yr { display: grid; grid-template-columns: 80px 1fr 90px; gap: 16px; align-items: center; font-size: 20px; }
+.yr .bar { height: 46px; background: var(--border); border-radius: 4px; }
+.yr .bar div { height: 100%; border-radius: 4px; background: var(--ink); }
+.yr.now .bar div { background: var(--action); }
+.yr b { font-family: var(--serif); font-size: 36px; text-align: right; }
+
+/* ranking (Câu 1) */
+.rank { display: grid; gap: 10px; width: 100%; }
+.rr { display: grid; grid-template-columns: 210px 1fr 130px; align-items: center; gap: 16px; font-size: 19px; text-align: left; }
+.rr .bar { height: 26px; background: var(--border); border-radius: 4px; }
+.rr .bar div { height: 100%; border-radius: 4px; background: var(--gold); }
+.rr.hi .bar div { background: var(--action); }
+.rr.hi { font-weight: 600; }
+.rr em { font-style: normal; font-size: 15px; color: var(--muted); }
+
+/* cards */
+.next { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; }
+.next.four { grid-template-columns: repeat(4, 1fr); }
+.nx { background: var(--paper-white); border: 1px solid var(--border); border-radius: 6px; padding: 26px 20px; font-size: 18px; text-align: left; display: grid; gap: 10px; align-content: start; line-height: 1.4; }
+.nx b { font-family: var(--serif); font-size: 44px; color: var(--action); line-height: 1; }
+.nx strong { font-size: 19px; }
+.nx span { color: var(--muted); font-size: 16px; }
+
+/* process */
+.flow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; align-items: stretch; width: 100%; }
+.step { background: var(--paper-white); border: 1px solid var(--border); border-radius: 6px; padding: 22px 14px; text-align: center; font-size: 17px; display: grid; gap: 8px; align-content: center; line-height: 1.35; }
+.step b { font-family: var(--serif); font-size: 24px; font-weight: 600; }
+.step.on { background: var(--action); color: #fff; border-color: var(--action); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 26px; }
+.chip { background: var(--paper-white); border: 1px solid var(--gold); border-radius: 999px; padding: 8px 16px; font-size: 17px; }
+
+/* funnel */
+.funnel { display: grid; gap: 12px; width: 100%; }
+.fz { display: grid; grid-template-columns: 1fr; align-items: center; gap: 16px; font-size: 18px; text-align: left; }
+.fz span { display: block; height: 46px; border-radius: 4px; background: var(--border); position: relative; min-width: 120px; }
+.fz span i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-style: normal; white-space: nowrap; }
+.fz span i b { font-family: var(--serif); font-size: 26px; margin-right: 8px; }
+.fz.last span { background: var(--green); color: #fff; }
+.fz em { font-style: normal; color: var(--muted); font-size: 16px; }
+
+/* problems */
+.prob { width: 100%; display: grid; gap: 12px; }
+.pr { display: grid; grid-template-columns: 1fr 34px 1fr; align-items: center; gap: 10px; font-size: 19px; text-align: left; line-height: 1.35; }
+.pr .a { background: var(--warn-bg); color: var(--warn-ink); padding: 16px 18px; border-radius: 6px; }
+.pr .b { background: var(--green-soft); padding: 16px 18px; border-radius: 6px; font-weight: 500; }
+.pr .arr { text-align: center; color: var(--muted); font-size: 22px; }
+
+/* price */
+.split { display: flex; height: 52px; border-radius: 4px; overflow: hidden; margin-top: 26px; font-size: 15px; font-weight: 600; color: #fff; width: 100%; }
+.split div { display: grid; place-items: center; text-align: center; line-height: 1.2; }
+
+@media screen and (max-width: 760px) {
+  .slide, .slide.hero { aspect-ratio: auto; grid-template-columns: 1fr; padding: 32px 16px 40px; gap: 20px; margin: 12px auto; width: calc(100vw - 16px); }
+  .slide::before { left: 16px; right: 16px; }
+  .foot { display: none; }
+  h1 { font-size: 40px; } h2 { font-size: 28px; } p.s { font-size: 16px; }
+  .big { font-size: 72px; }
+  .metrics, .next, .next.four { grid-template-columns: 1fr; }
+  .flow { grid-template-columns: 1fr 1fr; }
+  .rr { grid-template-columns: 1fr 90px; font-size: 15px; }
+  .rr .bar { grid-column: 1 / 3; grid-row: 2; height: 12px; }
+  .fz { grid-template-columns: 1fr; gap: 4px; }
+  .pr { grid-template-columns: 1fr; gap: 4px; font-size: 15px; } .pr .arr { display: none; }
+  .yr { grid-template-columns: 56px 1fr 60px; font-size: 15px; } .yr b { font-size: 24px; }
+  .split { font-size: 11px; }
+}
+@media print {
+  @page { size: 1280px 720px; margin: 0; }
+  body { background: var(--paper); }
+  .slide { margin: 0; border-radius: 0; break-after: page; width: 1280px; height: 720px; aspect-ratio: auto; }
+}
+</style>
+</head>
+<body>
+
+<section class="slide hero">
+  <div>
+    <div class="mark">
+      <svg width="52" height="34" viewBox="0 0 80 52" aria-hidden="true"><path d="M22 50C10 40 0 31 0 19 0 9 7 2 15.5 2 21 2 25 5 27.5 9 30 5 34 2 39.5 2 48 2 55 9 55 19 55 31 45 40 33 50l-5.5 2z" fill="#16130F"/><path d="M47 50C35 40 25 31 25 19 25 9 32 2 40.5 2 46 2 50 5 52.5 9 55 5 59 2 64.5 2 73 2 80 9 80 19 80 31 70 40 58 50l-5.5 2z" fill="#EC1C2D"/></svg>
+      Doppelherz · AI Claude
+    </div>
+    <div class="k">Bài test Quản lý dự án AI</div>
+    <h1>Tuân thủ là <em>sản phẩm</em></h1>
+    <p class="s">Tự động hóa cho Doppelherz Việt Nam và robot đồng bộ nội dung Website → Facebook, Pinterest.</p>
+    <p class="who"><b>Đỗ Hùng Anh</b> · 20/11/2026</p>
+  </div>
+  <div class="pins">
+    <img src="assets/39906_pin.jpg" alt="Pin Pinterest về miễn dịch ở trẻ, robot tạo từ bài trên website">
+    <img src="assets/39213_pin.jpg" alt="Pin Pinterest về cáu gắt tuổi tiền mãn kinh">
+    <img src="assets/39858_pin.jpg" alt="Pin Pinterest về bù nước khi chơi pickleball">
+  </div>
+  <span class="no">1</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Doppelherz hôm nay</div>
+    <h2>Nhà phân phối <em>chạy bằng Excel</em></h2>
+    <p class="s">Mastertran nhập khẩu độc quyền từ Đức từ 2012.</p>
+  </div>
+  <div class="metrics">
+    <div class="m"><b>36</b><span>sản phẩm, tất cả là thực phẩm bảo vệ sức khỏe</span></div>
+    <div class="m ink"><b>5 <small>kênh</small></b><span>OTC, ETC, MT, Online, truyền thống; chia 4 vùng</span></div>
+    <div class="m ink"><b>0</b><span>ERP, DMS hay CRM được nêu công khai; tin tuyển dụng đòi Excel, Google Form</span></div>
+  </div>
+  <span class="foot">Nguồn: doppelherz.vn, tin tuyển dụng, REST API của website</span>
+  <span class="no">2</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Bộ máy nội dung</div>
+    <h2>Số bài trên web <em>giảm 76%</em></h2>
+    <p class="s">Bài kiến thức sức khỏe dừng từ tháng 6/2026. Kho 1.300 bài cũ chưa được dùng lại. Chưa có Pinterest.</p>
+  </div>
+  <div class="years">
+    <div class="yr"><span>2022</span><div class="bar"><div style="width:100%"></div></div><b>597</b></div>
+    <div class="yr now"><span>2026</span><div class="bar"><div style="width:23.8%"></div></div><b>142</b></div>
+  </div>
+  <span class="foot">Đếm qua WordPress REST API của doppelherz.vn; năm 2026 tính đến 19/11</span>
+  <span class="no">3</span>
+</section>
+
+<section class="slide full">
+  <div>
+    <div class="k">Rủi ro pháp lý</div>
+    <div class="big">110 <small>triệu ₫</small></div>
+    <p class="s">Mức phạt tối đa cho một lỗi quảng cáo TPBVSK chưa được xác nhận nội dung. Lớn hơn cả ngân sách dự án.</p>
+    <div class="chips"><span class="chip">Nghị định 15/2018: xác nhận nội dung trước</span><span class="chip">Câu cảnh báo bắt buộc</span><span class="chip">Không dùng hình ảnh bác sĩ</span><span class="chip">Luật AI 2025: gắn nhãn</span></div>
+  </div>
+  <span class="no">4</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Câu 1 · 9 phòng ban</div>
+    <h2>Ưu tiên theo <em>tốc độ, đo được, giảm rủi ro</em></h2>
+    <p class="s">Độ dài thanh là mức ưu tiên. Màu đỏ là ba hạng mục làm trước.</p>
+  </div>
+  <div class="rank">
+    <div class="rr hi"><span>Marketing</span><div class="bar"><div style="width:100%"></div></div><em>thư viện + trợ lý</em></div>
+    <div class="rr hi"><span>Kế toán</span><div class="bar"><div style="width:96%"></div></div><em>hóa đơn điện tử</em></div>
+    <div class="rr hi"><span>Dịch vụ bán hàng</span><div class="bar"><div style="width:92%"></div></div><em>Zalo ZNS</em></div>
+    <div class="rr"><span>Kinh doanh Online</span><div class="bar"><div style="width:86%"></div></div><em>Cao</em></div>
+    <div class="rr"><span>Kinh doanh OTC</span><div class="bar"><div style="width:72%"></div></div><em>Cao, giai đoạn 2</em></div>
+    <div class="rr"><span>Kho</span><div class="bar"><div style="width:62%"></div></div><em>TB–Cao</em></div>
+    <div class="rr"><span>HCNS</span><div class="bar"><div style="width:50%"></div></div><em>Trung bình</em></div>
+    <div class="rr"><span>Kinh doanh ETC</span><div class="bar"><div style="width:46%"></div></div><em>Trung bình</em></div>
+    <div class="rr"><span>Kinh doanh MT</span><div class="bar"><div style="width:44%"></div></div><em>Trung bình</em></div>
+  </div>
+  <span class="no">5</span>
+</section>
+
+<section class="slide full">
+  <div style="width:100%">
+    <div class="k">Câu 1 · Làm trước</div>
+    <h2 style="margin-bottom:30px">Ba việc thấy kết quả <em>trong vài tuần</em></h2>
+    <div class="next">
+      <div class="nx"><b>1</b><strong>Thư viện nội dung đã xác nhận + trợ lý Claude</strong><span>Giảm rủi ro lớn nhất; nền cho robot và chatbot. 15–25 triệu ₫.</span></div>
+      <div class="nx"><b>2</b><strong>Hóa đơn điện tử tự động</strong><span>Hóa đơn đã là XML; giờ tiết kiệm đếm được. 5–15 triệu ₫/năm.</span></div>
+      <div class="nx"><b>3</b><strong>Zalo OA/ZNS cho đơn, công nợ</strong><span>TPBVSK mua lại hằng tháng; bớt cuộc gọi. 5–10 triệu ₫.</span></div>
+    </div>
+  </div>
+  <span class="no">6</span>
+</section>
+
+<section class="slide full">
+  <div style="width:100%">
+    <div class="k">Câu 2 · Robot đồng bộ nội dung</div>
+    <h2 style="margin-bottom:30px">AI viết, <em>người quyết</em></h2>
+    <div class="flow">
+      <div class="step"><b>01</b>Đọc bài mới trên web</div>
+      <div class="step"><b>02</b>Claude viết cho Facebook, Pinterest</div>
+      <div class="step"><b>03</b>Luật trong code</div>
+      <div class="step"><b>04</b>Claude pháp chế đọc lại</div>
+      <div class="step on"><b>05</b>Người duyệt</div>
+      <div class="step"><b>06</b>Lên lịch, báo cáo</div>
+    </div>
+    <div class="chips"><span class="chip">Không bài nào đăng khi chưa duyệt</span><span class="chip">Code tự chèn câu cảnh báo</span><span class="chip">Không dùng AI tạo ảnh</span></div>
+  </div>
+  <span class="no">7</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Sản phẩm chạy thật</div>
+    <h2>9 bài thật, <em>6 bài</em> lên lịch</h2>
+    <p class="s">Chạy trên doppelherz.vn ngày 19/11/2026 bằng Claude. Khoảng 2 phút, dưới 1,3 USD.</p>
+  </div>
+  <div class="funnel">
+    <div class="fz"><span style="width:100%"><i><b>9</b>bài đọc từ website</i></span></div>
+    <div class="fz"><span style="width:89%"><i><b>8</b>Claude viết</i></span></div>
+    <div class="fz"><span style="width:78%"><i><b>7</b>qua luật trong code</i></span></div>
+    <div class="fz last"><span style="width:67%"><i><b>6</b>duyệt và lên lịch</i></span></div>
+  </div>
+  <span class="foot">Bỏ qua 1 thông báo khuyến mại B2B · chặn 1 bài quảng cáo · 1 bài chờ người duyệt</span>
+  <span class="no">8</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Bản xem trước</div>
+    <h2>Một bài web thành <em>bài Facebook và pin</em></h2>
+    <p class="s">Pin 1000 × 1500 làm từ ảnh gốc, có tiêu đề tiếng Việt.</p>
+  </div>
+  <img class="shot" src="assets/demo_post.png" alt="Xem trước bài Facebook và pin Pinterest cho bài bù nước khi chơi pickleball">
+  <span class="no">9</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Bài học từ bản chạy</div>
+    <h2>Code bắt được <em>điều AI bỏ sót</em></h2>
+  </div>
+  <div class="prob">
+    <div class="pr"><div class="a">Bài “kiến thức” có nhắc Aktiv Meno</div><div class="arr">→</div><div class="b">Code xếp là quảng cáo, chặn vì chưa có số xác nhận</div></div>
+    <div class="pr"><div class="a">AI pháp chế chỉ đọc tóm tắt: khoảng 20 cảnh báo sai</div><div class="arr">→</div><div class="b">Đọc toàn bài: còn 2 cảnh báo đúng</div></div>
+    <div class="pr"><div class="a">Ảnh gốc ghi “Số 1 tại Đức”</div><div class="arr">→</div><div class="b">Người duyệt phải xem cả ảnh</div></div>
+    <div class="pr"><div class="a">Thông báo khuyến mại cho đại lý</div><div class="arr">→</div><div class="b">Không đăng: thông tin B2B</div></div>
+  </div>
+  <span class="no">10</span>
+</section>
+
+<section class="slide full">
+  <div style="width:100%">
+    <div class="k">Kế hoạch · 6 tuần · 3 người</div>
+    <h2 style="margin-bottom:30px">Năm mốc, <em>ký nghiệm thu</em> ở tuần 6</h2>
+    <div class="flow" style="grid-template-columns:repeat(5,1fr)">
+      <div class="step"><b>T1</b>Khảo sát, kiểm kê hồ sơ quảng cáo</div>
+      <div class="step"><b>T2</b>Thiết kế, pháp chế duyệt quy tắc</div>
+      <div class="step"><b>T3–4</b>Xây dựng, nộp hồ sơ Pinterest</div>
+      <div class="step"><b>T5</b>Kiểm thử, chạy thử 2 tuần</div>
+      <div class="step on"><b>T6</b>Đào tạo, bàn giao, nghiệm thu</div>
+    </div>
+    <div class="chips"><span class="chip">PM, tư vấn AI Claude</span><span class="chip">Lập trình viên tự động hóa</span><span class="chip">Chuyên viên nội dung và tuân thủ</span></div>
+  </div>
+  <span class="no">11</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Báo giá</div>
+    <div class="big" style="font-size:112px">44 <small>triệu ₫</small></div>
+    <p class="s">Trước VAT. Gồm VAT 8%: 47,52 triệu ₫. Vận hành khoảng 300.000 ₫/tháng.</p>
+  </div>
+  <div style="width:100%">
+    <div class="split">
+      <div style="flex:10;background:#5C554C">Khảo sát<br>10%</div>
+      <div style="flex:15;background:#7D5F24">Thiết kế<br>15%</div>
+      <div style="flex:45;background:#C8102E">Xây dựng 45%</div>
+      <div style="flex:12;background:#16130F">Kiểm thử<br>12%</div>
+      <div style="flex:8;background:#2F5D50">Đào<br>tạo</div>
+      <div style="flex:10;background:#C3A063;color:#16130F">Bảo hành<br>10%</div>
+    </div>
+    <div class="metrics" style="margin-top:22px">
+      <div class="m"><b>40/40/20</b><span>thanh toán khi ký, kiểm thử, nghiệm thu</span></div>
+      <div class="m ink"><b>3 <small>tháng</small></b><span>bảo hành sửa lỗi, chỉnh prompt</span></div>
+      <div class="m ink"><b style="white-space:nowrap">1,5 <small>USD</small></b><span>Claude API mỗi tháng cho 100 bài</span></div>
+    </div>
+  </div>
+  <span class="no">12</span>
+</section>
+
+<section class="slide">
+  <div>
+    <div class="k">Rủi ro lớn nhất</div>
+    <h2>Pinterest <em>chưa cho đăng công khai</em></h2>
+    <p class="s">Ở quyền Trial, pin chỉ người tạo thấy. Pinterest không công bố thời gian duyệt.</p>
+  </div>
+  <div class="prob">
+    <div class="pr"><div class="a">Nghiệm thu phụ thuộc Pinterest</div><div class="arr">→</div><div class="b">Nghiệm thu bằng pin thử và hồ sơ đã nộp</div></div>
+    <div class="pr"><div class="a">Chưa có hồ sơ xác nhận quảng cáo</div><div class="arr">→</div><div class="b">Chỉ đăng bài kiến thức, sự kiện trong lúc chờ</div></div>
+    <div class="pr"><div class="a">Token Facebook mất hiệu lực</div><div class="arr">→</div><div class="b">Token công ty sở hữu, cảnh báo trong 15 phút</div></div>
+  </div>
+  <span class="no">13</span>
+</section>
+
+<section class="slide full">
+  <div style="width:100%">
+    <div class="k">Lộ trình mở rộng</div>
+    <h2 style="margin-bottom:30px">Từ nội dung bên ngoài <em>đến dữ liệu nội bộ</em></h2>
+    <div class="next four">
+      <div class="nx"><b>T3–4</b><strong>Chiến dịch truyền thông</strong><span>Zalo, TikTok, Instagram, kiểm duyệt KOL. 20–40 triệu ₫.</span></div>
+      <div class="nx"><b>T4–6</b><strong>Vận hành, họp, giao ban</strong><span>Biên bản họp bằng Claude, giao việc, tính chiết khấu. 25–45 triệu ₫.</span></div>
+      <div class="nx"><b>T6–9</b><strong>Ký duyệt văn bản</strong><span>Hợp đồng đại lý, văn bản HCNS ký số. 20–40 triệu ₫.</span></div>
+      <div class="nx"><b>T9–12</b><strong>Nhân sự, đánh giá, chấm công</strong><span>Lọc CV, hội nhập, KPI, chấm công trình dược viên. 30–60 triệu ₫.</span></div>
+    </div>
+  </div>
+  <span class="no">14</span>
+</section>
+
+<section class="slide hero">
+  <div>
+    <div class="k">Xem bản chạy thật</div>
+    <h1>Cảm ơn <em>anh chị</em></h1>
+    <p class="s">Trang chạy thử: lystiger.github.io/doppelherz-content-bot</p>
+    <p class="s" style="margin-top:6px">Mã nguồn: github.com/lystiger/doppelherz-content-bot</p>
+    <p class="who"><b>Đỗ Hùng Anh</b> · Quản lý dự án AI Claude</p>
+  </div>
+  <img class="shot" src="assets/demo_overview.png" alt="Trang tổng quan của robot: kết quả lần chạy trên 9 bài">
+  <span class="no">15</span>
+</section>
+
+<script>
+// Phím chuyển slide: cuộn tới slide kế tiếp hoặc trước đó.
+const slides = [...document.querySelectorAll('.slide')];
+function cur() { let i = 0, best = 1e9; slides.forEach((s, k) => { const d = Math.abs(s.getBoundingClientRect().top); if (d < best) { best = d; i = k; } }); return i; }
+addEventListener('keydown', e => {
+  const f = ['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key), b = ['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key);
+  if (!f && !b) return;
+  e.preventDefault();
+  const n = Math.max(0, Math.min(slides.length - 1, cur() + (f ? 1 : -1)));
+  slides[n].scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+</script>
+</body>
+</html>
