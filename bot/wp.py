@@ -65,4 +65,5 @@ def fetch_demo_posts() -> list[dict]:
 
 def fetch_products() -> list[str]:
     items = _get(f"{BASE}/wp-json/wc/store/v1/products?per_page=100")
-    return sorted({clean_text(i["name"]) for i in items})
+    # Store names read "TPBVSK Aktiv Meno"; posts say "Aktiv Meno".
+    return sorted({re.sub(r"^TPBVSK\s+", "", clean_text(i["name"]), flags=re.I) for i in items})

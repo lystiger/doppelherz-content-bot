@@ -39,6 +39,12 @@ def test_product_name_turns_education_into_ad_with_label_and_warning():
     assert compliance.WARNING in r["final"]["facebook_message"]
 
 
+def test_product_ad_quotes_the_detected_product():
+    r = compliance.check(item("Tham khảo Aktiv Meno nhé.", post_type="product_ad"), PRODUCTS)
+    blocks = [i for i in r["issues"] if i["level"] == "block"]
+    assert any("Aktiv Meno" in i["quote"] for i in blocks)
+
+
 def test_soft_claim_needs_human_review():
     r = compliance.check(item("Vitamin D giúp tăng cường sức đề kháng."), PRODUCTS)
     assert r["verdict"] == "review"

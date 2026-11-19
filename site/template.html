@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doppelherz Content Bot</title>
+<meta name="description" content="Bản chạy thử robot đồng bộ nội dung Website → Facebook & Pinterest cho Doppelherz Việt Nam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#F7F2EA; --paper:#FFFDF9; --ink:#16130F; --ink2:#5C554C; --line:#E7DCC9;
+  --gold:#C3A063; --gold-text:#7D5F24; --heart:#EC1C2D; --red:#C8102E; --red-soft:#FBE3E5;
+  --green:#2F5D50; --green-soft:#DCE8E2; --amber:#8A5A00; --amber-soft:#FBEFD6; --grey-soft:#ECE7DF;
+  --serif:"Newsreader",Georgia,serif; --sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 16px/1.55 var(--sans);font-variant-numeric:tabular-nums}
+a{color:var(--ink);text-decoration-color:var(--gold);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--red)}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(32px,5vw,48px);line-height:1.1}
+h2{font-size:28px;line-height:1.2}
+.muted{color:var(--ink2)}
+.small{font-size:14px}
+
+/* header */
+.top{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top .wrap{display:flex;align-items:center;gap:28px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:21px;font-weight:600;text-decoration:none;white-space:nowrap}
+.brand svg{flex:none}
+nav.links{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none}
+nav.links a{font-size:15px;text-decoration:none;color:var(--ink2);white-space:nowrap;padding:8px 0}
+nav.links a:hover{color:var(--ink)}
+.dry{margin-left:auto;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--amber);background:var(--amber-soft);border-radius:999px;padding:5px 11px;white-space:nowrap}
+
+/* hero */
+.hero{padding:56px 0 28px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-text);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--gold)}
+.hero p.lead{font-size:18px;max-width:760px;color:var(--ink2);margin:16px 0 0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font-size:14px;color:var(--ink2)}
+.meta b{color:var(--ink);font-weight:600}
+
+/* panel */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:8px}
+.kpi{padding:4px 20px;border-left:1px solid var(--line)}
+.kpi:first-child{border-left:0;padding-left:0}
+.kpi .n{font-family:var(--serif);font-size:40px;line-height:1.1;font-weight:600}
+.kpi .l{font-size:14px;color:var(--ink2)}
+.flow{display:flex;height:40px;border-radius:6px;overflow:hidden;margin:24px 0 10px;gap:2px}
+.flow div{display:flex;align-items:center;padding:0 10px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;min-width:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink2)}
+.save{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+.save .n{font-size:22px;font-weight:600}
+.note{font-size:13px;color:var(--ink2);margin-top:12px}
+
+section{padding:44px 0 8px;scroll-margin-top:72px}
+.row{scroll-margin-top:72px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:4px;flex-wrap:wrap}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 14px var(--sans);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.b-scheduled,.b-approved,.b-pass{color:var(--green);background:var(--green-soft)}
+.b-pending_review,.b-review,.b-needs_edit{color:var(--amber);background:var(--amber-soft)}
+.b-blocked,.b-block,.b-rejected,.b-error{color:var(--red);background:var(--red-soft)}
+.b-skipped{color:var(--ink2);background:var(--grey-soft)}
+.tag{font-size:12.5px;color:var(--gold-text);border:1px solid var(--gold);border-radius:4px;padding:1px 7px;white-space:nowrap}
+
+/* queue rows */
+.row{border-bottom:1px solid var(--line)}
+.row>summary{list-style:none;display:grid;grid-template-columns:36px 96px 1fr auto;gap:18px;align-items:center;padding:18px 0;cursor:pointer}
+.row>summary::-webkit-details-marker{display:none}
+.row .idx{font-family:var(--serif);font-size:26px;color:var(--ink2)}
+.row .thumb{width:96px;height:64px;border-radius:6px;object-fit:cover;background:var(--grey-soft)}
+.row .t{font-weight:600;font-size:17px;line-height:1.35}
+.row .sub{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.row .right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.chev{font-size:13px;color:var(--ink2)}
+.row[open] .chev{color:var(--red)}
+.body{padding:4px 0 28px 54px}
+.why{font-size:15px;color:var(--ink2);margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card h4{margin:0;font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text);padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.fb .head{display:flex;gap:10px;align-items:center;padding:14px 16px 6px}
+.fb .av{width:40px;height:40px;border-radius:50%;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center}
+.fb .nm{font-weight:600;font-size:15px}
+.fb .when{font-size:12.5px;color:var(--ink2)}
+.fb .msg{white-space:pre-wrap;padding:6px 16px 14px;font-size:15px}
+.fb img{width:100%;display:block;aspect-ratio:1.91/1;object-fit:cover;border-top:1px solid var(--line)}
+.pin{padding:14px}
+.pin img{width:100%;border-radius:14px;display:block;aspect-ratio:2/3;object-fit:cover}
+.pin .pt{font-weight:600;margin-top:10px;line-height:1.35}
+.pin .pd{font-size:14px;color:var(--ink2);margin-top:6px}
+.pin .alt{font-size:13px;color:var(--ink2);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.checks{margin-top:20px}
+.checks ul{list-style:none;margin:0;padding:0}
+.checks li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:12px 16px;border-top:1px solid var(--line);font-size:14.5px}
+.checks li:first-child{border-top:0}
+.checks q{color:var(--ink)}
+.checks .fix{color:var(--ink2);margin-top:3px}
+.empty{padding:14px 16px;font-size:14.5px;color:var(--ink2)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.btn{font:600 15px var(--sans);border-radius:8px;padding:11px 18px;min-height:44px;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+pre{background:#1E1A15;color:#EDE6DA;font:13px/1.5 var(--mono);padding:16px;border-radius:8px;overflow:auto;margin:10px 0 0;max-height:340px}
+details.api>summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--gold-text);margin-top:16px}
+
+/* schedule */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:13px;font-weight:600;color:var(--ink2);padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tablewrap{overflow-x:auto}
+
+/* workflow */
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:0;counter-reset:s;margin-top:20px}
+.step{position:relative;padding:18px 16px 18px 0;border-top:2px solid var(--gold)}
+.step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--serif);font-size:30px;color:var(--gold-text);display:block}
+.step b{display:block;margin:4px 0}
+.step span{font-size:14px;color:var(--ink2)}
+.step.gate{border-top-color:var(--red)}
+.step.gate::before{color:var(--red)}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.rules .panel{padding:20px}
+.rules h3{font-size:19px;margin-bottom:8px}
+.rules p{margin:0;font-size:14.5px;color:var(--ink2)}
+
+footer{margin:56px 0 0;padding:28px 0 48px;border-top:1px solid var(--line);font-size:14px;color:var(--ink2)}
+footer p{margin:4px 0}
+
+@media (max-width:900px){
+  .kpis{grid-template-columns:repeat(3,1fr);row-gap:16px}
+  .kpi:nth-child(4){border-left:0;padding-left:0}
+  .grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .rules{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .top .wrap{gap:14px}
+  nav.links{display:none}
+  .hero{padding-top:36px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi{border-left:0;padding-left:0}
+  .kpi .n{font-size:32px}
+  .save{grid-template-columns:1fr}
+  .flow div{font-size:0;padding:0}
+  .row>summary{grid-template-columns:72px 1fr;gap:12px}
+  .row .idx{display:none}
+  .row .thumb{width:72px;height:54px}
+  .row .right{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start}
+  .body{padding-left:0}
+  .checks li{grid-template-columns:1fr;gap:6px}
+  .checks li .badge{justify-self:start}
+  .card h4{flex-wrap:wrap}
+  .steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#tong-quan" aria-label="Doppelherz Content Bot">
+      <svg width="40" height="26" viewBox="0 0 80 52" aria-hidden="true">
+        <path d="M22 50C10 40 0 31 0 19 0 9 7 2 15.5 2 21 2 25 5 27.5 9 30 5 34 2 39.5 2 48 2 55 9 55 19 55 31 45 40 33 50l-5.5 2z" fill="#16130F"/>
+        <path d="M47 50C35 40 25 31 25 19 25 9 32 2 40.5 2 46 2 50 5 52.5 9 55 5 59 2 64.5 2 73 2 80 9 80 19 80 31 70 40 58 50l-5.5 2z" fill="#EC1C2D"/>
+      </svg>
+      <span>Content Bot</span>
+    </a>
+    <nav class="links" aria-label="Mục lục">
+      <a href="#hang-doi">Hàng đợi duyệt</a>
+      <a href="#lich-dang">Lịch đăng</a>
+      <a href="#quy-trinh">Quy trình</a>
+    </nav>
+    <span class="dry" title="Không đăng thật lên Facebook hay Pinterest">CHẠY THỬ</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero" id="tong-quan">
+    <div class="eyebrow">Bản chạy thử trên dữ liệu thật</div>
+    <h1>Mỗi bài trên website thành bài Facebook và pin Pinterest, trong khuôn khổ luật quảng cáo</h1>
+    <p class="lead">Robot đọc bài mới trên doppelherz.vn, nhờ Claude viết lại cho Facebook và Pinterest, kiểm tra theo Nghị định 15/2018 về quảng cáo thực phẩm bảo vệ sức khỏe, rồi chờ người duyệt trước khi lên lịch đăng.</p>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div class="panel" aria-labelledby="kpi-title">
+    <h2 id="kpi-title" class="small muted" style="font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text)">Kết quả lần chạy</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="flow" id="flow" role="img"></div>
+    <div class="legend" id="legend"></div>
+    <div class="save" id="save"></div>
+    <p class="note">Thời gian làm tay là giả định: 40 phút cho mỗi bài gồm viết lại cho 2 nền tảng, làm ảnh 2:3 và tự rà luật. Chi phí AI tính theo giá niêm yết API; bản chạy thử dùng gói Claude sẵn có.</p>
+  </div>
+
+  <section id="hang-doi" aria-labelledby="q-title">
+    <div class="sechead">
+      <h2 id="q-title">Hàng đợi duyệt</h2>
+      <div class="filters" id="filters" role="group" aria-label="Lọc theo trạng thái"></div>
+    </div>
+    <div id="queue"></div>
+  </section>
+
+  <section id="lich-dang" aria-labelledby="s-title">
+    <div class="sechead"><h2 id="s-title">Lịch đăng</h2><span class="muted small">Giờ Việt Nam · Facebook 11:30 và 20:00 · Pinterest 21:00</span></div>
+    <div class="tablewrap"><table id="schedule"></table></div>
+    <p class="note">Facebook nhận lịch qua Graph API v26.0 (<code>scheduled_publish_time</code>, từ 10 phút đến 30 ngày). Pinterest chưa có lịch hẹn giờ qua API nên robot giữ hàng đợi và tự đăng đúng giờ. Ở quyền Trial, pin chỉ hiện với người tạo cho tới khi Pinterest duyệt quyền Standard.</p>
+  </section>
+
+  <section id="quy-trinh" aria-labelledby="w-title">
+    <div class="sechead"><h2 id="w-title">Quy trình</h2><span class="muted small">Mỗi 30 phút một lần</span></div>
+    <div class="steps">
+      <div class="step"><b>Đọc bài mới</b><span>WordPress REST API, kèm ảnh đại diện và danh sách 36 sản phẩm.</span></div>
+      <div class="step"><b>Claude viết</b><span>Phân loại bài, viết bài Facebook, tiêu đề và mô tả Pinterest, alt text.</span></div>
+      <div class="step"><b>Luật trong code</b><span>Chặn từ cấm, nhận diện tên sản phẩm, tự chèn cảnh báo và nhãn AI.</span></div>
+      <div class="step"><b>Claude pháp chế</b><span>Đọc lại bản nháp với bài gốc, trích câu rủi ro và đề xuất câu thay.</span></div>
+      <div class="step gate"><b>Người duyệt</b><span>Không bài nào được đăng nếu chưa có người bấm duyệt.</span></div>
+      <div class="step"><b>Lên lịch và báo cáo</b><span>Facebook hẹn giờ, Pinterest vào hàng đợi, số liệu về Google Sheets.</span></div>
+    </div>
+    <div class="rules">
+      <div class="panel"><h3>Bài có tên sản phẩm là quảng cáo</h3><p>Code tự xếp loại lại, thêm nhãn “Thực phẩm bảo vệ sức khỏe” và câu cảnh báo, và chặn nếu thư viện chưa có số xác nhận nội dung của Cục An toàn thực phẩm.</p></div>
+      <div class="panel"><h3>Không dùng AI tạo ảnh</h3><p>Ảnh pin làm từ ảnh gốc của bài, không cắt mất nội dung. Tránh sai bao bì sản phẩm và nghĩa vụ gắn nhãn ảnh AI theo Luật Trí tuệ nhân tạo 2025.</p></div>
+      <div class="panel"><h3>Không gửi dữ liệu khách hàng</h3><p>AI chỉ nhận nội dung bài công khai trên website, nên không phát sinh chuyển dữ liệu cá nhân ra nước ngoài theo Luật Bảo vệ dữ liệu cá nhân 2025.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Dữ liệu: bài viết và sản phẩm đọc trực tiếp từ doppelherz.vn qua REST API công khai. Bản chạy thử, không đăng thật.</p>
+    <p>Lệnh duyệt trên trang này chỉ là minh họa và chỉ lưu trong trình duyệt của bạn.</p>
+    <p id="foot"></p>
+  </footer>
+</main>
+
+<script>
+const DATA = __DATA__;
+const L = {
+  status:{scheduled:"Đã lên lịch",approved:"Đã duyệt",pending_review:"Chờ duyệt",blocked:"Bị chặn",rejected:"Từ chối",skipped:"Bỏ qua",error:"Lỗi"},
+  type:{education:"Kiến thức",product_ad:"Quảng cáo sản phẩm",event_pr:"Sự kiện / PR",promotion:"Khuyến mại B2B"},
+  verdict:{pass:"Đạt",review:"Cần xem",block:"Chặn",needs_edit:"Cần sửa"},
+  level:{block:"Chặn",warn:"Cần xem",fix:"Đã sửa"},
+};
+const FLOW = [["scheduled","var(--green)","#fff"],["approved","var(--green)","#fff"],["pending_review","var(--amber-soft)","var(--amber)"],["blocked","var(--red)","#fff"],["rejected","var(--red-soft)","var(--red)"],["skipped","var(--grey-soft)","var(--ink2)"],["error","var(--red-soft)","var(--red)"]];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const badge = (k, map) => `<span class="badge b-${esc(k)}">${esc(map[k] || k)}</span>`;
+const fmt = d => { const t = new Date(new Date(d).getTime() + 7*3600e3); const p = n => String(n).padStart(2,"0"); return `${p(t.getUTCDate())}/${p(t.getUTCMonth()+1)} ${p(t.getUTCHours())}:${p(t.getUTCMinutes())}`; };
+
+let decisions = {};
+try { decisions = JSON.parse(localStorage.getItem("dh-decisions") || "{}"); } catch (e) {}
+const statusOf = it => decisions[it.id] || it.status;
+let filter = "all";
+
+function renderTop(){
+  const items = DATA.items, n = items.length;
+  const count = s => items.filter(i => statusOf(i) === s).length;
+  const cost = items.reduce((a,i)=>a+(i.cost||0),0);
+  const run = DATA.generated_at ? fmt(DATA.generated_at) : "";
+  document.getElementById("meta").innerHTML =
+    `<span>Chạy lúc <b>${esc(run)}</b></span><span>Mô hình <b>${esc(DATA.model)}</b></span><span>Nguồn <b>doppelherz.vn</b> · ${n} bài · ${DATA.products} sản phẩm</span>`;
+  const k = [[n,"bài đã đọc"],[count("scheduled")+count("approved"),"đã duyệt, lên lịch"],[count("pending_review"),"chờ người duyệt"],[count("blocked"),"bị chặn theo luật"],[count("skipped"),"bỏ qua (B2B)"]];
+  document.getElementById("kpis").innerHTML = k.map(([v,l])=>`<div class="kpi"><div class="n">${v}</div><div class="l">${l}</div></div>`).join("");
+  const parts = FLOW.map(([s,bg,fg])=>[s,count(s),bg,fg]).filter(p=>p[1]);
+  const flow = document.getElementById("flow");
+  flow.setAttribute("aria-label", parts.map(p=>`${L.status[p[0]]}: ${p[1]}`).join(", "));
+  flow.innerHTML = parts.map(([s,c,bg,fg])=>`<div style="flex:${c};background:${bg};color:${fg}">${c} ${L.status[s]}</div>`).join("");
+  document.getElementById("legend").innerHTML = parts.map(([s,c])=>`<span>${L.status[s]}: ${c}</span>`).join("");
+  const worked = items.filter(i => statusOf(i) !== "skipped").length;
+  document.getElementById("save").innerHTML =
+    `<div><div class="n">${worked*40} phút</div><div class="muted small">làm tay (giả định 40 phút/bài)</div></div>`+
+    `<div><div class="n">~2 phút + ${worked} lượt duyệt</div><div class="muted small">robot chạy, người chỉ đọc và bấm duyệt</div></div>`+
+    `<div><div class="n">$${cost.toFixed(2)}</div><div class="muted small">chi phí AI cho cả lần chạy (giá niêm yết)</div></div>`;
+  document.getElementById("foot").textContent = `Tạo bởi Doppelherz Content Bot · ${run}`;
+}
+
+function renderFilters(){
+  const opts = [["all","Tất cả"],["scheduled","Đã lên lịch"],["pending_review","Chờ duyệt"],["blocked","Bị chặn"],["skipped","Bỏ qua"]];
+  document.getElementById("filters").innerHTML = opts.map(([v,l])=>`<button class="chip" aria-pressed="${filter===v}" data-f="${v}">${l}</button>`).join("");
+  document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderFilters();renderQueue();});
+}
+
+function issuesList(it){
+  const rows = [
+    ...(it.issues||[]).map(i=>`<li>${badge(i.level==="fix"?"pass":i.level==="warn"?"review":"block",{pass:"Đã sửa",review:"Cần xem",block:"Chặn"})}<div><div>${esc(i.rule)}</div><div class="fix">Trích: <q>${esc(i.quote)}</q></div></div></li>`),
+    ...(it.ai_issues||[]).map(i=>`<li>${badge("review",{review:"AI pháp chế"})}<div><div><q>${esc(i.quote)}</q></div><div class="fix">${esc(i.problem)}</div><div class="fix">Đề xuất: ${esc(i.suggestion)}</div></div></li>`),
+  ];
+  return rows.length ? `<ul>${rows.join("")}</ul>` : `<div class="empty">Không phát hiện vấn đề. Vẫn cần người duyệt trước khi đăng.</div>`;
+}
+
+function itemBody(it){
+  const st = statusOf(it);
+  if (!it.fb) return `<div class="body"><p class="why">${esc((it.log||[]).join(" "))}</p>${it.type_reason?`<p class="why">Lý do phân loại: ${esc(it.type_reason)}</p>`:""}<a href="${esc(it.link)}" target="_blank" rel="noopener">Xem bài gốc</a></div>`;
+  const when = it.fb_time ? `Hẹn đăng ${fmt(it.fb_time*1000)}` : (st==="blocked" ? "Không được đăng" : "Chưa lên lịch");
+  const actions = st==="pending_review"
+    ? `<div class="actions"><button class="btn primary" data-act="approved" data-id="${it.id}">Duyệt và lên lịch</button><button class="btn" data-act="rejected" data-id="${it.id}">Từ chối</button><span class="muted small">Minh họa: chỉ lưu trong trình duyệt</span></div>`
+    : (decisions[it.id] ? `<div class="actions"><button class="btn" data-act="undo" data-id="${it.id}">Hoàn tác</button></div>` : "");
+  return `<div class="body">
+    <p class="why">${esc(it.type_reason||"")}</p>
+    <div class="grid">
+      <div class="card fb"><h4><span>Facebook Page</span><span>${esc(when)}</span></h4>
+        <div class="head"><div class="av"><svg width="22" height="17" viewBox="0 0 68 52" aria-hidden="true"><path d="M22 50C10 40 0 31 0 19 0 9 7 2 15.5 2 21 2 25 5 27.5 9 30 5 34 2 39.5 2 48 2 55 9 55 19 55 31 45 40 33 50l-5.5 2z" fill="#16130F"/><path d="M35 50C23 40 13 31 13 19 13 9 20 2 28.5 2 34 2 38 5 40.5 9 43 5 47 2 52.5 2 61 2 68 9 68 19 68 31 58 40 46 50l-5.5 2z" fill="#EC1C2D"/></svg></div>
+          <div><div class="nm">Doppelherz Việt Nam</div><div class="when">${esc(when)} · Công khai</div></div></div>
+        <div class="msg">${esc(it.fb)}</div>
+        ${it.src_img?`<img src="${esc(it.src_img)}" alt="${esc(it.alt)}" loading="lazy">`:""}
+      </div>
+      <div class="card"><h4><span>Pinterest</span><span>${it.pin_time?esc(fmt(it.pin_time)):"1000 × 1500"}</span></h4>
+        <div class="pin">${it.pin_img?`<img src="${esc(it.pin_img)}" alt="${esc(it.alt)}" loading="lazy">`:""}
+          <div class="pt">${esc(it.pin_title)}</div><div class="pd">${esc(it.pin_desc)}</div>
+          <div class="alt"><b>Alt text:</b> ${esc(it.alt)}</div></div>
+      </div>
+    </div>
+    <div class="card checks"><h4><span>Kiểm tra tuân thủ</span><span>Code: ${esc(L.verdict[it.code_verdict])} · AI: ${esc(L.verdict[it.ai_verdict])}</span></h4>${issuesList(it)}</div>
+    ${actions}
+    ${it.requests?`<details class="api"><summary>Yêu cầu API sẽ gửi (chạy thử)</summary><pre>${esc(JSON.stringify(it.requests,null,2))}</pre></details>`:""}
+    <p class="small" style="margin-top:14px"><a href="${esc(it.link)}" target="_blank" rel="noopener">Xem bài gốc trên doppelherz.vn</a></p>
+  </div>`;
+}
+
+function renderQueue(){
+  const open = new Set([...document.querySelectorAll(".row[open]")].map(d=>d.dataset.id));
+  const list = DATA.items.filter(i => filter==="all" || statusOf(i)===filter || (filter==="scheduled" && statusOf(i)==="approved"));
+  document.getElementById("queue").innerHTML = list.length ? list.map((it,i)=>`
+    <details class="row" id="bai-${it.id}" data-id="${it.id}" ${open.has(String(it.id))?"open":""}>
+      <summary>
+        <span class="idx">${i+1}</span>
+        ${it.src_img?`<img class="thumb" src="${esc(it.src_img)}" alt="" loading="lazy">`:`<span class="thumb" aria-hidden="true"></span>`}
+        <div><div class="t">${esc(it.title)}</div>
+          <div class="sub"><span class="tag">${esc(L.type[it.type]||"Không rõ")}</span><span>Đăng web ${esc(it.date.split("-").reverse().join("/"))}</span>${it.fb_time?`<span>· Facebook ${esc(fmt(it.fb_time*1000))}</span>`:""}</div></div>
+        <div class="right">${badge(statusOf(it),L.status)}<span class="chev">Xem chi tiết</span></div>
+      </summary>
+      ${itemBody(it)}
+    </details>`).join("") : `<p class="empty">Không có bài nào ở trạng thái này.</p>`;
+  document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id;
+    if (b.dataset.act==="undo") delete decisions[id]; else decisions[id]=b.dataset.act;
+    try { localStorage.setItem("dh-decisions", JSON.stringify(decisions)); } catch (e) {}
+    renderTop(); renderQueue();
+  });
+}
+
+function renderSchedule(){
+  const rows = DATA.items.filter(i=>i.fb_time).sort((a,b)=>a.fb_time-b.fb_time);
+  document.getElementById("schedule").innerHTML = `<thead><tr><th>Bài</th><th>Facebook</th><th>Pinterest</th><th>Loại</th></tr></thead><tbody>`+
+    rows.map(i=>`<tr><td>${esc(i.title)}</td><td style="white-space:nowrap">${esc(fmt(i.fb_time*1000))}</td><td style="white-space:nowrap">${esc(fmt(i.pin_time))}</td><td>${esc(L.type[i.type])}</td></tr>`).join("")+`</tbody>`;
+}
+
+renderTop(); renderFilters(); renderQueue(); renderSchedule();
+const h = location.hash.match(/^#bai-(\d+)$/);
+if (h) { const d = document.querySelector(`.row[data-id="${h[1]}"]`); if (d) { d.open = true; d.scrollIntoView(); } }
+</script>
+</body>
+</html>

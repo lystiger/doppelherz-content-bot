@@ -10,6 +10,7 @@ Flow:
   WP REST --> Claude writer --> code rules + Claude reviewer --> human --> FB/Pin requests --> report
 """
 import json
+import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -139,6 +140,23 @@ def cmd_schedule() -> None:
     cmd_status()
 
 
+def cmd_recheck() -> None:
+    """Re-run the code rules on saved drafts (no AI calls), e.g. after a rule change."""
+    products = [re.sub(r"^TPBVSK\s+", "", p, flags=re.I) for p in json.loads(PRODUCTS.read_text())]
+    PRODUCTS.write_text(json.dumps(products, ensure_ascii=False, indent=2))
+    items = load()
+    for it in items:
+        if "check" not in it:
+            continue
+        it["check"] = compliance.check(it, products)
+        if (it["check"]["verdict"] == "block" or it["review"]["verdict"] == "block") and it["status"] != "blocked":
+            it["status"] = "blocked"
+            it.pop("requests", None)
+            it["log"].append("Kiểm tra lại: bị chặn theo luật mới")
+    save(items)
+    cmd_status()
+
+
 def cmd_status() -> None:
     items = load()
     counts: dict[str, int] = {}
@@ -152,4 +170,4 @@ if __name__ == "__main__":
     args = sys.argv[1:] or ["status"]
     {"generate": lambda: cmd_generate(), "review": lambda: cmd_review(),
      "approve": lambda: cmd_approve(args[1:]), "schedule": lambda: cmd_schedule(),
-     "status": lambda: cmd_status()}[args[0]]()
+     "recheck": lambda: cmd_recheck(), "status": lambda: cmd_status()}[args[0]]()

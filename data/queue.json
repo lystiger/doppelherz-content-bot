@@ -677,12 +677,14 @@
     },
     "check": {
       "post_type": "product_ad",
-      "products": [],
+      "products": [
+        "Aktiv Meno"
+      ],
       "issues": [
         {
           "level": "block",
           "rule": "Chưa có số xác nhận nội dung quảng cáo (Cục ATTP) trong thư viện",
-          "quote": "sản phẩm"
+          "quote": "Aktiv Meno"
         }
       ],
       "verdict": "block",

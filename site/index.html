@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doppelherz Content Bot</title>
+<meta name="description" content="Bản chạy thử robot đồng bộ nội dung Website → Facebook & Pinterest cho Doppelherz Việt Nam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#F7F2EA; --paper:#FFFDF9; --ink:#16130F; --ink2:#5C554C; --line:#E7DCC9;
+  --gold:#C3A063; --gold-text:#7D5F24; --heart:#EC1C2D; --red:#C8102E; --red-soft:#FBE3E5;
+  --green:#2F5D50; --green-soft:#DCE8E2; --amber:#8A5A00; --amber-soft:#FBEFD6; --grey-soft:#ECE7DF;
+  --serif:"Newsreader",Georgia,serif; --sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 16px/1.55 var(--sans);font-variant-numeric:tabular-nums}
+a{color:var(--ink);text-decoration-color:var(--gold);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--red)}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(32px,5vw,48px);line-height:1.1}
+h2{font-size:28px;line-height:1.2}
+.muted{color:var(--ink2)}
+.small{font-size:14px}
+
+/* header */
+.top{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top .wrap{display:flex;align-items:center;gap:28px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:21px;font-weight:600;text-decoration:none;white-space:nowrap}
+.brand svg{flex:none}
+nav.links{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none}
+nav.links a{font-size:15px;text-decoration:none;color:var(--ink2);white-space:nowrap;padding:8px 0}
+nav.links a:hover{color:var(--ink)}
+.dry{margin-left:auto;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--amber);background:var(--amber-soft);border-radius:999px;padding:5px 11px;white-space:nowrap}
+
+/* hero */
+.hero{padding:56px 0 28px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-text);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--gold)}
+.hero p.lead{font-size:18px;max-width:760px;color:var(--ink2);margin:16px 0 0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font-size:14px;color:var(--ink2)}
+.meta b{color:var(--ink);font-weight:600}
+
+/* panel */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:8px}
+.kpi{padding:4px 20px;border-left:1px solid var(--line)}
+.kpi:first-child{border-left:0;padding-left:0}
+.kpi .n{font-family:var(--serif);font-size:40px;line-height:1.1;font-weight:600}
+.kpi .l{font-size:14px;color:var(--ink2)}
+.flow{display:flex;height:40px;border-radius:6px;overflow:hidden;margin:24px 0 10px;gap:2px}
+.flow div{display:flex;align-items:center;padding:0 10px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;min-width:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink2)}
+.save{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+.save .n{font-size:22px;font-weight:600}
+.note{font-size:13px;color:var(--ink2);margin-top:12px}
+
+section{padding:44px 0 8px;scroll-margin-top:72px}
+.row{scroll-margin-top:72px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:4px;flex-wrap:wrap}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 14px var(--sans);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.b-scheduled,.b-approved,.b-pass{color:var(--green);background:var(--green-soft)}
+.b-pending_review,.b-review,.b-needs_edit{color:var(--amber);background:var(--amber-soft)}
+.b-blocked,.b-block,.b-rejected,.b-error{color:var(--red);background:var(--red-soft)}
+.b-skipped{color:var(--ink2);background:var(--grey-soft)}
+.tag{font-size:12.5px;color:var(--gold-text);border:1px solid var(--gold);border-radius:4px;padding:1px 7px;white-space:nowrap}
+
+/* queue rows */
+.row{border-bottom:1px solid var(--line)}
+.row>summary{list-style:none;display:grid;grid-template-columns:36px 96px 1fr auto;gap:18px;align-items:center;padding:18px 0;cursor:pointer}
+.row>summary::-webkit-details-marker{display:none}
+.row .idx{font-family:var(--serif);font-size:26px;color:var(--ink2)}
+.row .thumb{width:96px;height:64px;border-radius:6px;object-fit:cover;background:var(--grey-soft)}
+.row .t{font-weight:600;font-size:17px;line-height:1.35}
+.row .sub{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.row .right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.chev{font-size:13px;color:var(--ink2)}
+.row[open] .chev{color:var(--red)}
+.body{padding:4px 0 28px 54px}
+.why{font-size:15px;color:var(--ink2);margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card h4{margin:0;font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text);padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.fb .head{display:flex;gap:10px;align-items:center;padding:14px 16px 6px}
+.fb .av{width:40px;height:40px;border-radius:50%;background:var(--paper);border:1px solid var(--line);display:grid;place-items:center}
+.fb .nm{font-weight:600;font-size:15px}
+.fb .when{font-size:12.5px;color:var(--ink2)}
+.fb .msg{white-space:pre-wrap;padding:6px 16px 14px;font-size:15px}
+.fb img{width:100%;display:block;aspect-ratio:1.91/1;object-fit:cover;border-top:1px solid var(--line)}
+.pin{padding:14px}
+.pin img{width:100%;border-radius:14px;display:block;aspect-ratio:2/3;object-fit:cover}
+.pin .pt{font-weight:600;margin-top:10px;line-height:1.35}
+.pin .pd{font-size:14px;color:var(--ink2);margin-top:6px}
+.pin .alt{font-size:13px;color:var(--ink2);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.checks{margin-top:20px}
+.checks ul{list-style:none;margin:0;padding:0}
+.checks li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:12px 16px;border-top:1px solid var(--line);font-size:14.5px}
+.checks li:first-child{border-top:0}
+.checks q{color:var(--ink)}
+.checks .fix{color:var(--ink2);margin-top:3px}
+.empty{padding:14px 16px;font-size:14.5px;color:var(--ink2)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.btn{font:600 15px var(--sans);border-radius:8px;padding:11px 18px;min-height:44px;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+pre{background:#1E1A15;color:#EDE6DA;font:13px/1.5 var(--mono);padding:16px;border-radius:8px;overflow:auto;margin:10px 0 0;max-height:340px}
+details.api>summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--gold-text);margin-top:16px}
+
+/* schedule */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:13px;font-weight:600;color:var(--ink2);padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tablewrap{overflow-x:auto}
+
+/* workflow */
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:0;counter-reset:s;margin-top:20px}
+.step{position:relative;padding:18px 16px 18px 0;border-top:2px solid var(--gold)}
+.step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--serif);font-size:30px;color:var(--gold-text);display:block}
+.step b{display:block;margin:4px 0}
+.step span{font-size:14px;color:var(--ink2)}
+.step.gate{border-top-color:var(--red)}
+.step.gate::before{color:var(--red)}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.rules .panel{padding:20px}
+.rules h3{font-size:19px;margin-bottom:8px}
+.rules p{margin:0;font-size:14.5px;color:var(--ink2)}
+
+footer{margin:56px 0 0;padding:28px 0 48px;border-top:1px solid var(--line);font-size:14px;color:var(--ink2)}
+footer p{margin:4px 0}
+
+@media (max-width:900px){
+  .kpis{grid-template-columns:repeat(3,1fr);row-gap:16px}
+  .kpi:nth-child(4){border-left:0;padding-left:0}
+  .grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .rules{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .top .wrap{gap:14px}
+  nav.links{display:none}
+  .hero{padding-top:36px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi{border-left:0;padding-left:0}
+  .kpi .n{font-size:32px}
+  .save{grid-template-columns:1fr}
+  .flow div{font-size:0;padding:0}
+  .row>summary{grid-template-columns:72px 1fr;gap:12px}
+  .row .idx{display:none}
+  .row .thumb{width:72px;height:54px}
+  .row .right{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start}
+  .body{padding-left:0}
+  .checks li{grid-template-columns:1fr;gap:6px}
+  .checks li .badge{justify-self:start}
+  .card h4{flex-wrap:wrap}
+  .steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#tong-quan" aria-label="Doppelherz Content Bot">
+      <svg width="40" height="26" viewBox="0 0 80 52" aria-hidden="true">
+        <path d="M22 50C10 40 0 31 0 19 0 9 7 2 15.5 2 21 2 25 5 27.5 9 30 5 34 2 39.5 2 48 2 55 9 55 19 55 31 45 40 33 50l-5.5 2z" fill="#16130F"/>
+        <path d="M47 50C35 40 25 31 25 19 25 9 32 2 40.5 2 46 2 50 5 52.5 9 55 5 59 2 64.5 2 73 2 80 9 80 19 80 31 70 40 58 50l-5.5 2z" fill="#EC1C2D"/>
+      </svg>
+      <span>Content Bot</span>
+    </a>
+    <nav class="links" aria-label="Mục lục">
+      <a href="#hang-doi">Hàng đợi duyệt</a>
+      <a href="#lich-dang">Lịch đăng</a>
+      <a href="#quy-trinh">Quy trình</a>
+    </nav>
+    <span class="dry" title="Không đăng thật lên Facebook hay Pinterest">CHẠY THỬ</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero" id="tong-quan">
+    <div class="eyebrow">Bản chạy thử trên dữ liệu thật</div>
+    <h1>Mỗi bài trên website thành bài Facebook và pin Pinterest, trong khuôn khổ luật quảng cáo</h1>
+    <p class="lead">Robot đọc bài mới trên doppelherz.vn, nhờ Claude viết lại cho Facebook và Pinterest, kiểm tra theo Nghị định 15/2018 về quảng cáo thực phẩm bảo vệ sức khỏe, rồi chờ người duyệt trước khi lên lịch đăng.</p>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div class="panel" aria-labelledby="kpi-title">
+    <h2 id="kpi-title" class="small muted" style="font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text)">Kết quả lần chạy</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="flow" id="flow" role="img"></div>
+    <div class="legend" id="legend"></div>
+    <div class="save" id="save"></div>
+    <p class="note">Thời gian làm tay là giả định: 40 phút cho mỗi bài gồm viết lại cho 2 nền tảng, làm ảnh 2:3 và tự rà luật. Chi phí AI tính theo giá niêm yết API; bản chạy thử dùng gói Claude sẵn có.</p>
+  </div>
+
+  <section id="hang-doi" aria-labelledby="q-title">
+    <div class="sechead">
+      <h2 id="q-title">Hàng đợi duyệt</h2>
+      <div class="filters" id="filters" role="group" aria-label="Lọc theo trạng thái"></div>
+    </div>
+    <div id="queue"></div>
+  </section>
+
+  <section id="lich-dang" aria-labelledby="s-title">
+    <div class="sechead"><h2 id="s-title">Lịch đăng</h2><span class="muted small">Giờ Việt Nam · Facebook 11:30 và 20:00 · Pinterest 21:00</span></div>
+    <div class="tablewrap"><table id="schedule"></table></div>
+    <p class="note">Facebook nhận lịch qua Graph API v26.0 (<code>scheduled_publish_time</code>, từ 10 phút đến 30 ngày). Pinterest chưa có lịch hẹn giờ qua API nên robot giữ hàng đợi và tự đăng đúng giờ. Ở quyền Trial, pin chỉ hiện với người tạo cho tới khi Pinterest duyệt quyền Standard.</p>
+  </section>
+
+  <section id="quy-trinh" aria-labelledby="w-title">
+    <div class="sechead"><h2 id="w-title">Quy trình</h2><span class="muted small">Mỗi 30 phút một lần</span></div>
+    <div class="steps">
+      <div class="step"><b>Đọc bài mới</b><span>WordPress REST API, kèm ảnh đại diện và danh sách 36 sản phẩm.</span></div>
+      <div class="step"><b>Claude viết</b><span>Phân loại bài, viết bài Facebook, tiêu đề và mô tả Pinterest, alt text.</span></div>
+      <div class="step"><b>Luật trong code</b><span>Chặn từ cấm, nhận diện tên sản phẩm, tự chèn cảnh báo và nhãn AI.</span></div>
+      <div class="step"><b>Claude pháp chế</b><span>Đọc lại bản nháp với bài gốc, trích câu rủi ro và đề xuất câu thay.</span></div>
+      <div class="step gate"><b>Người duyệt</b><span>Không bài nào được đăng nếu chưa có người bấm duyệt.</span></div>
+      <div class="step"><b>Lên lịch và báo cáo</b><span>Facebook hẹn giờ, Pinterest vào hàng đợi, số liệu về Google Sheets.</span></div>
+    </div>
+    <div class="rules">
+      <div class="panel"><h3>Bài có tên sản phẩm là quảng cáo</h3><p>Code tự xếp loại lại, thêm nhãn “Thực phẩm bảo vệ sức khỏe” và câu cảnh báo, và chặn nếu thư viện chưa có số xác nhận nội dung của Cục An toàn thực phẩm.</p></div>
+      <div class="panel"><h3>Không dùng AI tạo ảnh</h3><p>Ảnh pin làm từ ảnh gốc của bài, không cắt mất nội dung. Tránh sai bao bì sản phẩm và nghĩa vụ gắn nhãn ảnh AI theo Luật Trí tuệ nhân tạo 2025.</p></div>
+      <div class="panel"><h3>Không gửi dữ liệu khách hàng</h3><p>AI chỉ nhận nội dung bài công khai trên website, nên không phát sinh chuyển dữ liệu cá nhân ra nước ngoài theo Luật Bảo vệ dữ liệu cá nhân 2025.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Dữ liệu: bài viết và sản phẩm đọc trực tiếp từ doppelherz.vn qua REST API công khai. Bản chạy thử, không đăng thật.</p>
+    <p>Lệnh duyệt trên trang này chỉ là minh họa và chỉ lưu trong trình duyệt của bạn.</p>
+    <p id="foot"></p>
+  </footer>
+</main>
+
+<script>
+const DATA = {"items": [{"id": 40763, "title": "Doppelherz phối hợp cùng Viện Dinh dưỡng – Bộ Y tế đào tạo cho dược sĩ", "link": "https://doppelherz.vn/doppelherz-phoi-hop-cung-vien-dinh-duong-bo-y-te-dao-tao-cho-duoc-si/", "date": "2026-10-16", "status": "scheduled", "log": ["Người duyệt: approved", "DRY RUN: Facebook 19/11 20:00, Pinterest 19/11 21:00"], "cost": 0.1337, "src_img": "assets/src/40763.jpg", "type": "event_pr", "type_reason": "Bài là tin doanh nghiệp về chương trình đào tạo Doppelherz phối hợp với Viện Dinh dưỡng Quốc gia tổ chức và tài trợ học phí, mang tính trách nhiệm xã hội. Bài không giới thiệu sản phẩm cụ thể và cũng không phải chính sách khuyến mại cho đại lý.", "code_verdict": "pass", "issues": [], "fb": "Muốn tư vấn dinh dưỡng thật phù hợp, dược sĩ nhà thuốc cần hiểu những gì? 🌿\n\nDoppelherz phối hợp cùng Viện Dinh dưỡng Quốc gia tổ chức khóa học “Dinh dưỡng cơ bản và kỹ năng tư vấn” dành cho dược sĩ nhà thuốc. Khóa học dự kiến khai giảng ngày 25/11/2026 tại Viện Dinh dưỡng.\n\nChương trình gồm 48 tiết: 39 tiết lý thuyết và 9 tiết thực hành, học cả trực tiếp lẫn trực tuyến. Nội dung đi từ kiến thức nền về năng lượng, protein, chất xơ, vitamin, khoáng chất đến kỹ năng tư vấn cho ba nhóm: trẻ em, phụ nữ mang thai và người cao tuổi.\n\nDoppelherz tài trợ toàn bộ học phí cho 70 học viên được lựa chọn. Chúng tôi mong góp phần giúp thông tin dinh dưỡng mà mỗi người nhận được tại nhà thuốc ngày càng bài bản và khoa học hơn. 💛\n\nĐọc chi tiết về chương trình trên website Doppelherz: https://doppelherz.vn/doppelherz-phoi-hop-cung-vien-dinh-duong-bo-y-te-dao-tao-cho-duoc-si/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Khóa đào tạo tư vấn viên dinh dưỡng cho dược sĩ nhà thuốc – Doppelherz & Viện Dinh dưỡng", "pin_desc": "Khóa học “Dinh dưỡng cơ bản và kỹ năng tư vấn” do Doppelherz phối hợp với Viện Dinh dưỡng Quốc gia tổ chức dành cho dược sĩ nhà thuốc. Khóa gồm 48 tiết lý thuyết và thực hành về vitamin, khoáng chất, protein, chất xơ cùng kỹ năng tư vấn dinh dưỡng cho trẻ em, phụ nữ mang thai và người cao tuổi. Doppelherz tài trợ toàn bộ học phí cho 70 học viên. Dự kiến khai giảng ngày 25/11/2026.", "alt": "Hình ảnh minh họa chương trình đào tạo tư vấn viên dinh dưỡng dành cho dược sĩ nhà thuốc do Doppelherz phối hợp cùng Viện Dinh dưỡng Quốc gia tổ chức.", "ai_verdict": "pass", "ai_issues": [], "pin_img": "assets/pins/40763_pin.jpg", "fb_time": 1795093200, "pin_time": "2026-11-19T21:00:00+07:00", "requests": {"facebook": {"method": "POST", "url": "https://graph.facebook.com/v26.0/{PAGE_ID}/photos", "params": {"url": "https://doppelherz.vn/wp-content/uploads/thumb-1.jpg", "message": "Muốn tư vấn dinh dưỡng thật phù hợp, dược sĩ nhà thuốc cần hiểu những gì? 🌿\n\nDoppelherz phối hợp cùng Viện Dinh dưỡng Quốc gia tổ chức khóa học “Dinh dưỡng cơ bản và kỹ năng tư vấn” dành cho dược sĩ nhà thuốc. Khóa học dự kiến khai giảng ngày 25/11/2026 tại Viện Dinh dưỡng.\n\nChương trình gồm 48 tiết: 39 tiết lý thuyết và 9 tiết thực hành, học cả trực tiếp lẫn trực tuyến. Nội dung đi từ kiến thức nền về năng lượng, protein, chất xơ, vitamin, khoáng chất đến kỹ năng tư vấn cho ba nhóm: trẻ em, phụ nữ mang thai và người cao tuổi.\n\nDoppelherz tài trợ toàn bộ học phí cho 70 học viên được lựa chọn. Chúng tôi mong góp phần giúp thông tin dinh dưỡng mà mỗi người nhận được tại nhà thuốc ngày càng bài bản và khoa học hơn. 💛\n\nĐọc chi tiết về chương trình trên website Doppelherz: https://doppelherz.vn/doppelherz-phoi-hop-cung-vien-dinh-duong-bo-y-te-dao-tao-cho-duoc-si/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "published": "false", "scheduled_publish_time": 1795093200, "access_token": "{PAGE_TOKEN}"}}, "pinterest": {"method": "POST", "url": "https://api.pinterest.com/v5/pins", "publish_at": "2026-11-19T21:00:00+07:00", "json": {"board_id": "{BOARD_ID}", "title": "Khóa đào tạo tư vấn viên dinh dưỡng cho dược sĩ nhà thuốc – Doppelherz & Viện Dinh dưỡng", "description": "Khóa học “Dinh dưỡng cơ bản và kỹ năng tư vấn” do Doppelherz phối hợp với Viện Dinh dưỡng Quốc gia tổ chức dành cho dược sĩ nhà thuốc. Khóa gồm 48 tiết lý thuyết và thực hành về vitamin, khoáng chất, protein, chất xơ cùng kỹ năng tư vấn dinh dưỡng cho trẻ em, phụ nữ mang thai và người cao tuổi. Doppelherz tài trợ toàn bộ học phí cho 70 học viên. Dự kiến khai giảng ngày 25/11/2026.", "alt_text": "Hình ảnh minh họa chương trình đào tạo tư vấn viên dinh dưỡng dành cho dược sĩ nhà thuốc do Doppelherz phối hợp cùng Viện Dinh dưỡng Quốc gia tổ chức.", "link": "https://doppelherz.vn/doppelherz-phoi-hop-cung-vien-dinh-duong-bo-y-te-dao-tao-cho-duoc-si/", "media_source": {"source_type": "image_base64", "content_type": "image/jpeg", "data": "<base64 of data/images/40763_pin.jpg>"}}}}}, {"id": 40742, "title": "Danh sách trúng thưởng tại Hội nghị Khách hàng Doppelherz Việt Nam 2026", "link": "https://doppelherz.vn/danh-sach-trung-thuong-tai-hoi-nghi-khach-hang-doppelherz-viet-nam-2026/", "date": "2026-09-25", "status": "scheduled", "log": ["Người duyệt: approved", "DRY RUN: Facebook 20/11 11:30, Pinterest 20/11 21:00"], "cost": 0.1231, "src_img": "assets/src/40742.jpg", "type": "event_pr", "type_reason": "Bài công bố kết quả bốc thăm trúng thưởng tại Hội nghị Khách hàng Doppelherz Việt Nam 2026. Đây là tin sự kiện và tin doanh nghiệp, tri ân khách hàng và đối tác. Bài không quảng cáo công dụng sản phẩm và không phải thông báo chính sách khuyến mại đang áp dụng. Tuy vậy, người nhận giải đều là khách hàng B2B (nhà thuốc, nhà phân phối, bệnh viện), nên cần cân nhắc kỹ trước khi đăng cho người tiêu dùng (xem risk_notes).", "code_verdict": "pass", "issues": [], "fb": "Một hội nghị đã khép lại, nhưng niềm vui vẫn còn lan tỏa! 🎉\n\nTrong khuôn khổ Hội nghị Khách hàng Doppelherz Việt Nam 2026, chương trình bốc thăm trúng thưởng đã mang đến nhiều phần quà tri ân. Quà dành cho Quý Khách hàng và Quý Đối tác đã luôn tin tưởng, đồng hành cùng Doppelherz Việt Nam.\n\nCơ cấu giải thưởng gồm Giải Đặc biệt là 01 xe ô tô, cùng các giải Nhất, Nhì, Ba bằng vàng 9999. Giải Khuyến khích và Giải May mắn được quay số online.\n\nDoppelherz Việt Nam xin chúc mừng tất cả Quý Khách hàng may mắn. Mỗi phần quà là lời cảm ơn chân thành cho sự gắn bó trong suốt thời gian qua.\n\nHẹn gặp lại Quý vị trong những hành trình tiếp theo! 🤝\n\nXem danh sách trúng thưởng đầy đủ tại website: https://doppelherz.vn/danh-sach-trung-thuong-tai-hoi-nghi-khach-hang-doppelherz-viet-nam-2026/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Danh sách trúng thưởng Hội nghị Khách hàng Doppelherz Việt Nam 2026", "pin_desc": "Doppelherz Việt Nam công bố danh sách trúng thưởng tại Hội nghị Khách hàng 2026. Chương trình bốc thăm gồm Giải Đặc biệt là xe ô tô, các giải Nhất, Nhì, Ba bằng vàng 9999. Giải Khuyến khích và Giải May mắn được quay số online. Đây là lời tri ân dành cho Quý Khách hàng, Quý Đối tác đã đồng hành cùng Doppelherz Việt Nam. Xem danh sách đầy đủ trên website doppelherz.vn.", "alt": "Ảnh minh họa cho bài công bố danh sách trúng thưởng tại Hội nghị Khách hàng Doppelherz Việt Nam 2026, có tiêu đề chương trình và nhận diện thương hiệu Doppelherz.", "ai_verdict": "pass", "ai_issues": [], "pin_img": "assets/pins/40742_pin.jpg", "fb_time": 1795149000, "pin_time": "2026-11-20T21:00:00+07:00", "requests": {"facebook": {"method": "POST", "url": "https://graph.facebook.com/v26.0/{PAGE_ID}/photos", "params": {"url": "https://doppelherz.vn/wp-content/uploads/ATR53967-2.jpg", "message": "Một hội nghị đã khép lại, nhưng niềm vui vẫn còn lan tỏa! 🎉\n\nTrong khuôn khổ Hội nghị Khách hàng Doppelherz Việt Nam 2026, chương trình bốc thăm trúng thưởng đã mang đến nhiều phần quà tri ân. Quà dành cho Quý Khách hàng và Quý Đối tác đã luôn tin tưởng, đồng hành cùng Doppelherz Việt Nam.\n\nCơ cấu giải thưởng gồm Giải Đặc biệt là 01 xe ô tô, cùng các giải Nhất, Nhì, Ba bằng vàng 9999. Giải Khuyến khích và Giải May mắn được quay số online.\n\nDoppelherz Việt Nam xin chúc mừng tất cả Quý Khách hàng may mắn. Mỗi phần quà là lời cảm ơn chân thành cho sự gắn bó trong suốt thời gian qua.\n\nHẹn gặp lại Quý vị trong những hành trình tiếp theo! 🤝\n\nXem danh sách trúng thưởng đầy đủ tại website: https://doppelherz.vn/danh-sach-trung-thuong-tai-hoi-nghi-khach-hang-doppelherz-viet-nam-2026/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "published": "false", "scheduled_publish_time": 1795149000, "access_token": "{PAGE_TOKEN}"}}, "pinterest": {"method": "POST", "url": "https://api.pinterest.com/v5/pins", "publish_at": "2026-11-20T21:00:00+07:00", "json": {"board_id": "{BOARD_ID}", "title": "Danh sách trúng thưởng Hội nghị Khách hàng Doppelherz Việt Nam 2026", "description": "Doppelherz Việt Nam công bố danh sách trúng thưởng tại Hội nghị Khách hàng 2026. Chương trình bốc thăm gồm Giải Đặc biệt là xe ô tô, các giải Nhất, Nhì, Ba bằng vàng 9999. Giải Khuyến khích và Giải May mắn được quay số online. Đây là lời tri ân dành cho Quý Khách hàng, Quý Đối tác đã đồng hành cùng Doppelherz Việt Nam. Xem danh sách đầy đủ trên website doppelherz.vn.", "alt_text": "Ảnh minh họa cho bài công bố danh sách trúng thưởng tại Hội nghị Khách hàng Doppelherz Việt Nam 2026, có tiêu đề chương trình và nhận diện thương hiệu Doppelherz.", "link": "https://doppelherz.vn/danh-sach-trung-thuong-tai-hoi-nghi-khach-hang-doppelherz-viet-nam-2026/", "media_source": {"source_type": "image_base64", "content_type": "image/jpeg", "data": "<base64 of data/images/40742_pin.jpg>"}}}}}, {"id": 40712, "title": "Hội nghị Khách hàng Doppelherz Việt Nam 2026 và Hành trình 15 năm phát triển", "link": "https://doppelherz.vn/hoi-nghi-khach-hang-doppelherz-viet-nam-2026-va-hanh-trinh-15-nam-phat-trien/", "date": "2026-09-21", "status": "scheduled", "log": ["Người duyệt: approved", "DRY RUN: Facebook 20/11 20:00, Pinterest 21/11 21:00"], "cost": 0.1216, "src_img": "assets/src/40712.jpg", "type": "event_pr", "type_reason": "Bài viết đưa tin về sự kiện doanh nghiệp: Hội nghị Khách hàng 2026, kỷ niệm 15 năm phát triển, tri ân đối tác và công bố chương trình cộng đồng \"Chăm sóc sức khỏe chủ động\". Bài không giới thiệu sản phẩm cụ thể và không phải thông báo khuyến mại cho đại lý.", "code_verdict": "pass", "issues": [], "fb": "15 năm qua, điều gì đã giữ Doppelherz Việt Nam và các đối tác luôn gắn bó với nhau?\n\nTừ ngày 11 đến 13/9/2026, Hội nghị Khách hàng Doppelherz Việt Nam 2026 diễn ra tại Ninh Bình. Sự kiện quy tụ gần 500 khách hàng và đối tác từ mọi miền.\n\nBa ngày hai đêm là hành trình khám phá Tràng An và Bái Đính. Hai giải Pickleball và Golf cũng góp phần lan tỏa tinh thần vận động, sống lành mạnh.\n\nTại đêm Gala, Doppelherz công bố chương trình 5 năm \"Chăm sóc sức khỏe chủ động – Doppelherz Đồng hành vì sức khỏe tương lai\" (10/2026 – 9/2031). Giai đoạn đầu dự kiến có 15 tọa đàm cho phụ nữ và gia đình cùng 15 sự kiện truyền thông cho thanh thiếu niên. Mục tiêu là tiếp cận hơn 100.000 phụ nữ và thanh thiếu niên Việt Nam.\n\nĐêm Gala cũng là dịp tri ân những khách hàng đã gắn bó cùng thương hiệu từ 10 đến 15 năm. 💛\n\n👉 Mời bạn đọc bài viết đầy đủ trên website Doppelherz: https://doppelherz.vn/hoi-nghi-khach-hang-doppelherz-viet-nam-2026-va-hanh-trinh-15-nam-phat-trien/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Hội nghị Khách hàng Doppelherz Việt Nam 2026 tại Ninh Bình – Hành trình 15 năm", "pin_desc": "Hội nghị Khách hàng Doppelherz Việt Nam 2026 diễn ra từ 11 đến 13/9 tại Ninh Bình, quy tụ gần 500 khách hàng và đối tác. Sự kiện gồm hoạt động khám phá Tràng An, Bái Đính, giải Pickleball và Golf, đêm Gala tri ân 15 năm phát triển. Tại đây, Doppelherz công bố chương trình cộng đồng 5 năm \"Chăm sóc sức khỏe chủ động\" dành cho phụ nữ, gia đình và thanh thiếu niên Việt Nam.", "alt": "Hình ảnh sự kiện Hội nghị Khách hàng Doppelherz Việt Nam 2026 tại Ninh Bình, kỷ niệm 15 năm phát triển, với khách hàng và đối tác tham dự chương trình.", "ai_verdict": "pass", "ai_issues": [], "pin_img": "assets/pins/40712_pin.jpg", "fb_time": 1795179600, "pin_time": "2026-11-21T21:00:00+07:00", "requests": {"facebook": {"method": "POST", "url": "https://graph.facebook.com/v26.0/{PAGE_ID}/photos", "params": {"url": "https://doppelherz.vn/wp-content/uploads/image14.jpg", "message": "15 năm qua, điều gì đã giữ Doppelherz Việt Nam và các đối tác luôn gắn bó với nhau?\n\nTừ ngày 11 đến 13/9/2026, Hội nghị Khách hàng Doppelherz Việt Nam 2026 diễn ra tại Ninh Bình. Sự kiện quy tụ gần 500 khách hàng và đối tác từ mọi miền.\n\nBa ngày hai đêm là hành trình khám phá Tràng An và Bái Đính. Hai giải Pickleball và Golf cũng góp phần lan tỏa tinh thần vận động, sống lành mạnh.\n\nTại đêm Gala, Doppelherz công bố chương trình 5 năm \"Chăm sóc sức khỏe chủ động – Doppelherz Đồng hành vì sức khỏe tương lai\" (10/2026 – 9/2031). Giai đoạn đầu dự kiến có 15 tọa đàm cho phụ nữ và gia đình cùng 15 sự kiện truyền thông cho thanh thiếu niên. Mục tiêu là tiếp cận hơn 100.000 phụ nữ và thanh thiếu niên Việt Nam.\n\nĐêm Gala cũng là dịp tri ân những khách hàng đã gắn bó cùng thương hiệu từ 10 đến 15 năm. 💛\n\n👉 Mời bạn đọc bài viết đầy đủ trên website Doppelherz: https://doppelherz.vn/hoi-nghi-khach-hang-doppelherz-viet-nam-2026-va-hanh-trinh-15-nam-phat-trien/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "published": "false", "scheduled_publish_time": 1795179600, "access_token": "{PAGE_TOKEN}"}}, "pinterest": {"method": "POST", "url": "https://api.pinterest.com/v5/pins", "publish_at": "2026-11-21T21:00:00+07:00", "json": {"board_id": "{BOARD_ID}", "title": "Hội nghị Khách hàng Doppelherz Việt Nam 2026 tại Ninh Bình – Hành trình 15 năm", "description": "Hội nghị Khách hàng Doppelherz Việt Nam 2026 diễn ra từ 11 đến 13/9 tại Ninh Bình, quy tụ gần 500 khách hàng và đối tác. Sự kiện gồm hoạt động khám phá Tràng An, Bái Đính, giải Pickleball và Golf, đêm Gala tri ân 15 năm phát triển. Tại đây, Doppelherz công bố chương trình cộng đồng 5 năm \"Chăm sóc sức khỏe chủ động\" dành cho phụ nữ, gia đình và thanh thiếu niên Việt Nam.", "alt_text": "Hình ảnh sự kiện Hội nghị Khách hàng Doppelherz Việt Nam 2026 tại Ninh Bình, kỷ niệm 15 năm phát triển, với khách hàng và đối tác tham dự chương trình.", "link": "https://doppelherz.vn/hoi-nghi-khach-hang-doppelherz-viet-nam-2026-va-hanh-trinh-15-nam-phat-trien/", "media_source": {"source_type": "image_base64", "content_type": "image/jpeg", "data": "<base64 of data/images/40712_pin.jpg>"}}}}}, {"id": 39906, "title": "Lỗ hổng miễn dịch khiến trẻ hay ốm vặt mà cha mẹ dễ bỏ qua", "link": "https://doppelherz.vn/lo-hong-mien-dich-khien-tre-hay-om-vat/", "date": "2026-06-03", "status": "scheduled", "log": ["Người duyệt: approved", "DRY RUN: Facebook 21/11 11:30, Pinterest 22/11 21:00"], "cost": 0.1451, "src_img": "assets/src/39906.jpg", "type": "education", "type_reason": "Bài chia sẻ kiến thức về lỗ hổng miễn dịch ở trẻ: nguyên nhân và cách chăm sóc chung. Phần nội dung nhận được không nêu tên, giá, hình ảnh hay nơi mua sản phẩm nào.", "code_verdict": "pass", "issues": [], "fb": "Con vừa khỏi ho đã lại sổ mũi. Cha mẹ có đang nghĩ \"trẻ con đứa nào chẳng thế\"? 🤔\n\nTừ khoảng 6 tháng tuổi, lượng kháng thể con nhận từ mẹ giảm dần. Trong khi đó, hệ miễn dịch của trẻ thường đến khoảng 3–4 tuổi mới hoàn thiện tương đối. Khoảng trống giữa hai giai đoạn này được gọi là \"lỗ hổng miễn dịch\".\n\nNgoài yếu tố sinh lý, lỗ hổng này có thể rõ hơn khi trẻ thiếu vi chất như vitamin A, C, D, kẽm, sắt, selen. Hệ vi sinh đường ruột chưa ổn định, dùng kháng sinh không đúng chỉ định hay thiếu ngủ cũng là những yếu tố cần lưu ý.\n\nCha mẹ hoàn toàn có thể chủ động chăm sóc con: cho con ăn đa dạng, bú mẹ, tiêm chủng đúng lịch, ngủ đủ giấc và sống trong môi trường sạch sẽ. 💚\n\nĐọc bài đầy đủ để hiểu rõ hơn về lỗ hổng miễn dịch của con tại: https://doppelherz.vn/lo-hong-mien-dich-khien-tre-hay-om-vat/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Lỗ hổng miễn dịch ở trẻ: vì sao trẻ hay ốm vặt và cha mẹ nên làm gì?", "pin_desc": "Vì sao trẻ hay ốm vặt, cảm, ho lặp lại? Tìm hiểu về lỗ hổng miễn dịch ở trẻ từ 6 tháng đến 3 tuổi, giai đoạn kháng thể từ mẹ giảm dần trong khi hệ miễn dịch của con chưa hoàn thiện. Bài viết giải thích các nguyên nhân như thiếu vi chất, hệ vi sinh đường ruột chưa ổn định, dùng kháng sinh không đúng chỉ định. Kèm theo đó là gợi ý về dinh dưỡng, giấc ngủ và lối sống giúp cha mẹ chăm sóc sức đề kháng cho trẻ nhỏ.", "alt": "Hình minh họa cho bài viết về lỗ hổng miễn dịch khiến trẻ nhỏ hay ốm vặt, chủ đề chăm sóc sức đề kháng của trẻ trong gia đình.", "ai_verdict": "pass", "ai_issues": [{"quote": "Cha mẹ hoàn toàn có thể chủ động chăm sóc con: cho con ăn đa dạng, bú mẹ, tiêm chủng đúng lịch, ngủ đủ giấc và sống trong môi trường sạch sẽ.", "problem": "Gợi ý sửa tùy chọn, rủi ro thấp: chữ 'hoàn toàn' mang sắc thái tuyệt đối hóa, có thể bị hiểu là cha mẹ kiểm soát được hết. Câu không hứa hẹn kết quả sức khỏe nên không chặn việc đăng bài.", "suggestion": "Cha mẹ có thể chủ động chăm sóc con qua những thói quen hằng ngày: cho con ăn đa dạng, bú mẹ, tiêm chủng đúng lịch, ngủ đủ giấc và sống trong môi trường sạch sẽ."}], "pin_img": "assets/pins/39906_pin.jpg", "fb_time": 1795235400, "pin_time": "2026-11-22T21:00:00+07:00", "requests": {"facebook": {"method": "POST", "url": "https://graph.facebook.com/v26.0/{PAGE_ID}/photos", "params": {"url": "https://doppelherz.vn/wp-content/uploads/Bai9-anh3.png", "message": "Con vừa khỏi ho đã lại sổ mũi. Cha mẹ có đang nghĩ \"trẻ con đứa nào chẳng thế\"? 🤔\n\nTừ khoảng 6 tháng tuổi, lượng kháng thể con nhận từ mẹ giảm dần. Trong khi đó, hệ miễn dịch của trẻ thường đến khoảng 3–4 tuổi mới hoàn thiện tương đối. Khoảng trống giữa hai giai đoạn này được gọi là \"lỗ hổng miễn dịch\".\n\nNgoài yếu tố sinh lý, lỗ hổng này có thể rõ hơn khi trẻ thiếu vi chất như vitamin A, C, D, kẽm, sắt, selen. Hệ vi sinh đường ruột chưa ổn định, dùng kháng sinh không đúng chỉ định hay thiếu ngủ cũng là những yếu tố cần lưu ý.\n\nCha mẹ hoàn toàn có thể chủ động chăm sóc con: cho con ăn đa dạng, bú mẹ, tiêm chủng đúng lịch, ngủ đủ giấc và sống trong môi trường sạch sẽ. 💚\n\nĐọc bài đầy đủ để hiểu rõ hơn về lỗ hổng miễn dịch của con tại: https://doppelherz.vn/lo-hong-mien-dich-khien-tre-hay-om-vat/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "published": "false", "scheduled_publish_time": 1795235400, "access_token": "{PAGE_TOKEN}"}}, "pinterest": {"method": "POST", "url": "https://api.pinterest.com/v5/pins", "publish_at": "2026-11-22T21:00:00+07:00", "json": {"board_id": "{BOARD_ID}", "title": "Lỗ hổng miễn dịch ở trẻ: vì sao trẻ hay ốm vặt và cha mẹ nên làm gì?", "description": "Vì sao trẻ hay ốm vặt, cảm, ho lặp lại? Tìm hiểu về lỗ hổng miễn dịch ở trẻ từ 6 tháng đến 3 tuổi, giai đoạn kháng thể từ mẹ giảm dần trong khi hệ miễn dịch của con chưa hoàn thiện. Bài viết giải thích các nguyên nhân như thiếu vi chất, hệ vi sinh đường ruột chưa ổn định, dùng kháng sinh không đúng chỉ định. Kèm theo đó là gợi ý về dinh dưỡng, giấc ngủ và lối sống giúp cha mẹ chăm sóc sức đề kháng cho trẻ nhỏ.", "alt_text": "Hình minh họa cho bài viết về lỗ hổng miễn dịch khiến trẻ nhỏ hay ốm vặt, chủ đề chăm sóc sức đề kháng của trẻ trong gia đình.", "link": "https://doppelherz.vn/lo-hong-mien-dich-khien-tre-hay-om-vat/", "media_source": {"source_type": "image_base64", "content_type": "image/jpeg", "data": "<base64 of data/images/39906_pin.jpg>"}}}}}, {"id": 39858, "title": "Bù nước bù khoáng đúng cách duy trì thể lực người chơi pickleball", "link": "https://doppelherz.vn/bu-nuoc-bu-khoang-cho-nguoi-choi-pickleball/", "date": "2026-06-03", "status": "scheduled", "log": ["Người duyệt: approved", "DRY RUN: Facebook 21/11 20:00, Pinterest 23/11 21:00"], "cost": 0.1248, "src_img": "assets/src/39858.jpg", "type": "education", "type_reason": "Bài viết chia sẻ kiến thức về việc bù nước, bù khoáng cho người chơi pickleball: cơ thể mất gì khi vận động, các sai lầm thường gặp, khi nào cần bù khoáng và cách uống nước. Phần nội dung được cung cấp không nêu tên, giá, hình ảnh hay nơi mua sản phẩm nào.", "code_verdict": "pass", "issues": [], "fb": "Bạn có biết: đợi khát mới uống nước nghĩa là cơ thể bạn đã thiếu nước rồi? 🏓\n\nKhi chơi pickleball, bạn di chuyển liên tục và ra nhiều mồ hôi. Cơ thể mất nước và cả các chất điện giải như natri, kali, magie.\n\nNhững sai lầm thường gặp:\n– Uống thật nhiều trong một lần, dễ bị đầy bụng. Nên uống từng ngụm, khoảng 200–250 ml mỗi lần.\n– Chờ khát mới uống. Chỉ cần mất 1–2% trọng lượng cơ thể do thiếu nước là sức bền và khả năng tập trung đã có thể bị ảnh hưởng.\n– Chỉ uống nước lọc khi chơi lâu, ra nhiều mồ hôi.\n– Uống nước quá lạnh hoặc nước ngọt có ga.\n\nMẹo nhỏ: uống 300–500 ml nước trước khi ra sân 30–60 phút. Tranh thủ bổ sung nước trong giờ nghỉ giữa các set.\n\nKhi nào bạn cần bù khoáng? Đọc bài đầy đủ trên website nhé 💧\nhttps://doppelherz.vn/bu-nuoc-bu-khoang-cho-nguoi-choi-pickleball/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Bù nước bù khoáng khi chơi pickleball: sai lầm thường gặp và cách uống nước đúng", "pin_desc": "Chơi pickleball ra nhiều mồ hôi, nhất là khi trời nắng nóng. Lúc đó cơ thể mất nước và các chất điện giải như natri, kali, magie. Bài viết chỉ ra các sai lầm khi bù nước: uống quá nhiều trong một lần, chờ khát mới uống, chỉ uống nước lọc, uống nước quá lạnh hoặc có ga. Bạn cũng sẽ biết khi nào cần bù khoáng và cách uống nước trước, trong khi chơi để giữ thể lực.", "alt": "Ảnh minh họa chủ đề bù nước, bù khoáng cho người chơi pickleball, liên quan đến việc uống nước khi tập luyện thể thao.", "ai_verdict": "pass", "ai_issues": [], "pin_img": "assets/pins/39858_pin.jpg", "fb_time": 1795266000, "pin_time": "2026-11-23T21:00:00+07:00", "requests": {"facebook": {"method": "POST", "url": "https://graph.facebook.com/v26.0/{PAGE_ID}/photos", "params": {"url": "https://doppelherz.vn/wp-content/uploads/side-view-woman-drinking-water-scaled.jpg", "message": "Bạn có biết: đợi khát mới uống nước nghĩa là cơ thể bạn đã thiếu nước rồi? 🏓\n\nKhi chơi pickleball, bạn di chuyển liên tục và ra nhiều mồ hôi. Cơ thể mất nước và cả các chất điện giải như natri, kali, magie.\n\nNhững sai lầm thường gặp:\n– Uống thật nhiều trong một lần, dễ bị đầy bụng. Nên uống từng ngụm, khoảng 200–250 ml mỗi lần.\n– Chờ khát mới uống. Chỉ cần mất 1–2% trọng lượng cơ thể do thiếu nước là sức bền và khả năng tập trung đã có thể bị ảnh hưởng.\n– Chỉ uống nước lọc khi chơi lâu, ra nhiều mồ hôi.\n– Uống nước quá lạnh hoặc nước ngọt có ga.\n\nMẹo nhỏ: uống 300–500 ml nước trước khi ra sân 30–60 phút. Tranh thủ bổ sung nước trong giờ nghỉ giữa các set.\n\nKhi nào bạn cần bù khoáng? Đọc bài đầy đủ trên website nhé 💧\nhttps://doppelherz.vn/bu-nuoc-bu-khoang-cho-nguoi-choi-pickleball/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "published": "false", "scheduled_publish_time": 1795266000, "access_token": "{PAGE_TOKEN}"}}, "pinterest": {"method": "POST", "url": "https://api.pinterest.com/v5/pins", "publish_at": "2026-11-23T21:00:00+07:00", "json": {"board_id": "{BOARD_ID}", "title": "Bù nước bù khoáng khi chơi pickleball: sai lầm thường gặp và cách uống nước đúng", "description": "Chơi pickleball ra nhiều mồ hôi, nhất là khi trời nắng nóng. Lúc đó cơ thể mất nước và các chất điện giải như natri, kali, magie. Bài viết chỉ ra các sai lầm khi bù nước: uống quá nhiều trong một lần, chờ khát mới uống, chỉ uống nước lọc, uống nước quá lạnh hoặc có ga. Bạn cũng sẽ biết khi nào cần bù khoáng và cách uống nước trước, trong khi chơi để giữ thể lực.", "alt_text": "Ảnh minh họa chủ đề bù nước, bù khoáng cho người chơi pickleball, liên quan đến việc uống nước khi tập luyện thể thao.", "link": "https://doppelherz.vn/bu-nuoc-bu-khoang-cho-nguoi-choi-pickleball/", "media_source": {"source_type": "image_base64", "content_type": "image/jpeg", "data": "<base64 of data/images/39858_pin.jpg>"}}}}}, {"id": 39788, "title": "Mùa hè nắng nóng – Chuẩn bị gì khi chơi pickleball để không “đuối sức” giữa trận", "link": "https://doppelherz.vn/mua-he-nang-nong-chuan-bi-gi-khi-choi-pickleball-de-khong-duoi-suc-giua-tran/", "date": "2026-05-30", "status": "scheduled", "log": ["Người duyệt: approved", "DRY RUN: Facebook 22/11 11:30, Pinterest 24/11 21:00"], "cost": 0.1125, "src_img": "assets/src/39788.jpg", "type": "education", "type_reason": "Bài chia sẻ kiến thức về nguy cơ mất nước, mất điện giải khi chơi pickleball mùa hè và cách chuẩn bị trước, trong, sau khi chơi. Phần nội dung nhận được không nêu tên, giá hay nơi mua sản phẩm nào.", "code_verdict": "pass", "issues": [], "fb": "Bạn đã bao giờ hụt hơi hay bị chuột rút ngay giữa trận pickleball ngày hè chưa? ☀️\n\nKhi chơi ngoài trời nắng nóng, cơ thể ra nhiều mồ hôi. Bạn mất cả nước lẫn khoáng chất như natri, kali, magie. Khát nước, khô miệng, chóng mặt, mệt nhanh là những dấu hiệu bạn nên để ý.\n\nVài thói quen nhỏ giúp bạn chơi bền hơn:\n• Trước trận: ăn nhẹ (chuối, yến mạch, bánh mì nguyên cám), uống đủ nước, khởi động 5-10 phút.\n• Trong trận: đừng đợi khát mới uống. Uống khoảng 150 ml nước lọc hoặc nước điện giải mỗi 15-20 phút.\n• Sau trận: giãn cơ 5-10 phút, bù nước, ăn nhẹ trong vòng 30-60 phút.\n\nNếu thấy đau nhức hay chóng mặt, hãy dừng lại nghỉ ngơi nhé.\nChơi thể thao thông minh là chơi bền 🏓\n\nĐọc bài đầy đủ trên website Doppelherz:\nhttps://doppelherz.vn/mua-he-nang-nong-chuan-bi-gi-khi-choi-pickleball-de-khong-duoi-suc-giua-tran/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Chơi pickleball mùa hè nắng nóng: Cách bù nước và chuẩn bị để không đuối sức", "pin_desc": "Mẹo chơi pickleball mùa hè nắng nóng. Nhận biết dấu hiệu mất nước, mất điện giải như khát nước, khô miệng, chuột rút, chóng mặt. Chuẩn bị trước, trong và sau trận: ăn nhẹ carbohydrate, khởi động 5-10 phút, uống khoảng 150 ml nước mỗi 15-20 phút, giãn cơ và ăn nhẹ để phục hồi sau khi chơi. Chơi thể thao thông minh, chơi bền mỗi ngày.", "alt": "Ảnh minh họa cho bài viết về chơi pickleball ngoài trời trong thời tiết nắng nóng mùa hè, với chủ đề chuẩn bị và bù nước để không đuối sức giữa trận.", "ai_verdict": "pass", "ai_issues": [{"quote": "Chơi thể thao thông minh, chơi bền mỗi ngày.", "problem": "Không vi phạm, chỉ nên chỉnh cho sát bài gốc. Bài gốc không nói \"mỗi ngày\" mà nhấn mạnh tập đều đặn, có nghỉ ngơi hợp lý. Chữ \"mỗi ngày\" có thể bị hiểu là khuyên chơi liên tục mỗi ngày, trái với lời khuyên nghỉ ngơi trong bài.", "suggestion": "Chơi thể thao thông minh là chơi bền: tập đều đặn và nghỉ ngơi hợp lý."}], "pin_img": "assets/pins/39788_pin.jpg", "fb_time": 1795321800, "pin_time": "2026-11-24T21:00:00+07:00", "requests": {"facebook": {"method": "POST", "url": "https://graph.facebook.com/v26.0/{PAGE_ID}/photos", "params": {"url": "https://doppelherz.vn/wp-content/uploads/high-angle-people-sitting-outdoors-with-drinks-scaled.jpg", "message": "Bạn đã bao giờ hụt hơi hay bị chuột rút ngay giữa trận pickleball ngày hè chưa? ☀️\n\nKhi chơi ngoài trời nắng nóng, cơ thể ra nhiều mồ hôi. Bạn mất cả nước lẫn khoáng chất như natri, kali, magie. Khát nước, khô miệng, chóng mặt, mệt nhanh là những dấu hiệu bạn nên để ý.\n\nVài thói quen nhỏ giúp bạn chơi bền hơn:\n• Trước trận: ăn nhẹ (chuối, yến mạch, bánh mì nguyên cám), uống đủ nước, khởi động 5-10 phút.\n• Trong trận: đừng đợi khát mới uống. Uống khoảng 150 ml nước lọc hoặc nước điện giải mỗi 15-20 phút.\n• Sau trận: giãn cơ 5-10 phút, bù nước, ăn nhẹ trong vòng 30-60 phút.\n\nNếu thấy đau nhức hay chóng mặt, hãy dừng lại nghỉ ngơi nhé.\nChơi thể thao thông minh là chơi bền 🏓\n\nĐọc bài đầy đủ trên website Doppelherz:\nhttps://doppelherz.vn/mua-he-nang-nong-chuan-bi-gi-khi-choi-pickleball-de-khong-duoi-suc-giua-tran/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "published": "false", "scheduled_publish_time": 1795321800, "access_token": "{PAGE_TOKEN}"}}, "pinterest": {"method": "POST", "url": "https://api.pinterest.com/v5/pins", "publish_at": "2026-11-24T21:00:00+07:00", "json": {"board_id": "{BOARD_ID}", "title": "Chơi pickleball mùa hè nắng nóng: Cách bù nước và chuẩn bị để không đuối sức", "description": "Mẹo chơi pickleball mùa hè nắng nóng. Nhận biết dấu hiệu mất nước, mất điện giải như khát nước, khô miệng, chuột rút, chóng mặt. Chuẩn bị trước, trong và sau trận: ăn nhẹ carbohydrate, khởi động 5-10 phút, uống khoảng 150 ml nước mỗi 15-20 phút, giãn cơ và ăn nhẹ để phục hồi sau khi chơi. Chơi thể thao thông minh, chơi bền mỗi ngày.", "alt_text": "Ảnh minh họa cho bài viết về chơi pickleball ngoài trời trong thời tiết nắng nóng mùa hè, với chủ đề chuẩn bị và bù nước để không đuối sức giữa trận.", "link": "https://doppelherz.vn/mua-he-nang-nong-chuan-bi-gi-khi-choi-pickleball-de-khong-duoi-suc-giua-tran/", "media_source": {"source_type": "image_base64", "content_type": "image/jpeg", "data": "<base64 of data/images/39788_pin.jpg>"}}}}}, {"id": 39213, "title": "Cách giảm cáu gắt ở phụ nữ tuổi tiền mãn kinh hiệu quả", "link": "https://doppelherz.vn/cach-giam-cau-gat-o-phu-nu-tuoi-tien-man-kinh-hieu-qua/", "date": "2026-05-08", "status": "pending_review", "log": [], "cost": 0.1556, "src_img": "assets/src/39213.jpg", "type": "education", "type_reason": "Phần nội dung nhận được chỉ chia sẻ kiến thức về tình trạng cáu gắt ở phụ nữ tuổi tiền mãn kinh: biểu hiện, nguyên nhân (nội tiết tố, bốc hỏa, mất ngủ, áp lực cuộc sống) và gợi ý về dinh dưỡng, lối sống. Phần này không nêu tên, giá hay nơi mua sản phẩm nào.", "code_verdict": "pass", "issues": [], "fb": "Vì sao chỉ vài chiếc bát chưa rửa cũng đủ khiến bạn nổi nóng? 🤔\n\nNhiều chị em ngoài 40 bất ngờ thấy mình dễ bực bội. Tâm trạng đang vui có thể chuyển sang khó chịu rất nhanh. Rồi sau đó lại thấy hối hận.\n\nĐiều này không đơn giản là do \"tính tình thay đổi\". Ở giai đoạn tiền mãn kinh, nội tiết tố Estrogen giảm có thể ảnh hưởng đến Serotonin, chất giúp giữ cảm xúc bình ổn. Cùng với đó, những cơn bốc hỏa, giấc ngủ chập chờn và áp lực gia đình, công việc khiến tinh thần dễ quá tải.\n\nHiểu đúng nguyên nhân là bước đầu tiên để chăm sóc bản thân nhẹ nhàng hơn. Ăn uống hợp lý, vận động đều đặn và ngủ đủ giấc đều góp phần quan trọng. 🌿\n\nĐọc bài đầy đủ trên website Doppelherz để tìm hiểu thêm: https://doppelherz.vn/cach-giam-cau-gat-o-phu-nu-tuoi-tien-man-kinh-hieu-qua/\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Cáu gắt tuổi tiền mãn kinh: Nguyên nhân và cách giữ tâm trạng cân bằng cho phụ nữ", "pin_desc": "Phụ nữ tuổi tiền mãn kinh thường dễ cáu gắt, nóng nảy và thay đổi tâm trạng thất thường. Tìm hiểu nguyên nhân: Estrogen suy giảm làm ảnh hưởng đến Serotonin, cơn bốc hỏa, mất ngủ, đổ mồ hôi ban đêm và áp lực gia đình, công việc. Gợi ý chế độ dinh dưỡng với đậu phụ, mầm đậu nành, hạt lanh, hạt mè và thói quen sống lành mạnh giúp chị em chăm sóc sức khỏe tinh thần tuổi trung niên.", "alt": "Ảnh minh họa chủ đề phụ nữ tuổi trung niên trong giai đoạn tiền mãn kinh, với cảm xúc cáu gắt, căng thẳng trong cuộc sống hằng ngày.", "ai_verdict": "needs_edit", "ai_issues": [{"quote": "Vì sao chỉ vài chiếc bát chưa rửa cũng đủ khiến bạn nổi nóng? 🤔", "problem": "Câu gọi thẳng 'bạn' trong bài về tiền mãn kinh. Nếu chạy quảng cáo, Meta có thể coi là ngầm nói người xem có đặc điểm cá nhân (độ tuổi, tình trạng sức khỏe/tâm lý), vi phạm chính sách Personal Attributes.", "suggestion": "Vì sao chỉ vài chiếc bát chưa rửa cũng đủ khiến nhiều chị em nổi nóng? 🤔"}, {"quote": "https://doppelherz.vn/cach-giam-cau-gat-o-phu-nu-tuoi-tien-man-kinh-hieu-qua/", "problem": "Đường link hiển thị có chữ 'hiệu quả', ngụ ý hứa hẹn kết quả. Bài đích của thương hiệu TPBVSK có các câu rủi ro ('loại bỏ các cơn nóng nảy', 'Bù đắp Estrogen từ thực vật', 'bổ sung các hoạt chất sinh học') nên bài đăng dẫn về đó cũng chịu rủi ro theo.", "suggestion": "Dùng đường dẫn trung tính, ví dụ https://doppelherz.vn/cau-gat-o-phu-nu-tuoi-tien-man-kinh/ hoặc link rút gọn. Rà lại bài gốc theo NĐ 15/2018 trước khi chạy quảng cáo trả phí."}, {"quote": "Estrogen suy giảm làm ảnh hưởng đến Serotonin", "problem": "Pinterest viết khẳng định chắc chắn về cơ chế sinh học, trong khi bản Facebook đã viết mềm là 'có thể'. Hai kênh không thống nhất và câu này mang tính tuyệt đối hóa.", "suggestion": "Estrogen suy giảm có thể ảnh hưởng đến Serotonin"}, {"quote": "Gợi ý chế độ dinh dưỡng với đậu phụ, mầm đậu nành, hạt lanh, hạt mè và thói quen sống lành mạnh giúp chị em chăm sóc sức khỏe tinh thần tuổi trung niên.", "problem": "Liệt kê thực phẩm chứa isoflavone ngay sau phần nói về triệu chứng dễ bị hiểu là ăn những thứ này sẽ giảm cáu gắt hoặc bốc hỏa. Bài gốc gọi chúng là 'Bù đắp Estrogen từ thực vật' nên cách hiểu này càng dễ xảy ra.", "suggestion": "Gợi ý chế độ ăn uống đa dạng (đậu phụ, mầm đậu nành, các loại hạt…) cùng thói quen sống lành mạnh như vận động đều đặn, ngủ đủ giấc để chị em chăm sóc bản thân tuổi trung niên."}, {"quote": "Phụ nữ tuổi tiền mãn kinh thường dễ cáu gắt, nóng nảy và thay đổi tâm trạng thất thường.", "problem": "Khái quát hóa cả nhóm phụ nữ, hơi tuyệt đối. Mức rủi ro thấp, không bắt buộc sửa.", "suggestion": "Nhiều phụ nữ tuổi tiền mãn kinh dễ cáu gắt, nóng nảy và thay đổi tâm trạng hơn trước."}], "pin_img": "assets/pins/39213_pin.jpg"}, {"id": 26078, "title": "CÁCH GIÚP CHỊ EM PHỤ NỮ CÂN BẰNG NỘI TIẾT TỐ NỮ", "link": "https://doppelherz.vn/can-bang-noi-tiet-to-nu-tong-hop-cach/", "date": "2024-01-04", "status": "blocked", "log": [], "cost": 0.1545, "src_img": "assets/src/26078.jpg", "type": "product_ad", "type_reason": "Bài chủ yếu chia sẻ kiến thức về cân bằng nội tiết tố nữ. Tuy nhiên, mục VI nêu tên và giới thiệu sản phẩm Doppelherz Aktiv Meno, có thành phần, công dụng và link mua hàng. Vì vậy bài thuộc loại quảng cáo sản phẩm, không phải bài education.", "code_verdict": "block", "issues": [{"level": "block", "rule": "Chưa có số xác nhận nội dung quảng cáo (Cục ATTP) trong thư viện", "quote": "Aktiv Meno"}], "fb": "Vì sao bước vào tuổi tiền mãn kinh, nhiều chị em hay bốc hỏa, đổ mồ hôi đêm và mệt mỏi hơn? 🌸\n\nMột phần nguyên nhân đến từ sự thay đổi nội tiết tố nữ. Vài thói quen nhỏ mỗi ngày có thể giúp chị em chăm sóc bản thân nhẹ nhàng hơn:\n• Bổ sung đủ đạm trong mỗi bữa ăn\n• Ăn uống lành mạnh, hạn chế đường, không ăn quá no\n• Thêm thực phẩm chứa phytoestrogen như hạt lanh, bông cải xanh, việt quất\n• Giữ tinh thần thư thái, bớt căng thẳng\n• Vận động vừa sức: đi bộ, yoga, đạp xe\n\nBên cạnh đó, Doppelherz Aktiv Meno là thực phẩm bảo vệ sức khỏe nhập khẩu từ Đức, chứa isoflavone, vitamin B6 và canxi, giúp hỗ trợ giảm tần suất và mức độ các triệu chứng mãn kinh.\n\n👉 Đọc bài đầy đủ tại: https://doppelherz.vn/can-bang-noi-tiet-to-nu-tong-hop-cach/\n\nThực phẩm bảo vệ sức khỏe. Thực phẩm này không phải là thuốc, không có tác dụng thay thế thuốc chữa bệnh.\n\n#Doppelherz\nNội dung có sự hỗ trợ của AI.", "pin_title": "Cách cân bằng nội tiết tố nữ tuổi mãn kinh: thói quen dinh dưỡng và lối sống", "pin_desc": "Gợi ý cách cân bằng nội tiết tố nữ cho chị em ở giai đoạn tiền mãn kinh và mãn kinh: bổ sung đủ đạm mỗi bữa, ăn uống lành mạnh và hạn chế đường. Nên chọn thực phẩm giàu phytoestrogen như hạt lanh, bông cải xanh, việt quất, lựu. Giảm stress và tập thể dục vừa sức như đi bộ, yoga, đạp xe. Tìm hiểu thêm về Doppelherz Aktiv Meno, thực phẩm bảo vệ sức khỏe từ Đức với isoflavone, vitamin B6 và canxi.", "alt": "Ảnh minh họa cho bài viết về cách cân bằng nội tiết tố nữ, chủ đề sức khỏe phụ nữ ở tuổi mãn kinh.", "ai_verdict": "needs_edit", "ai_issues": [{"quote": "Bên cạnh đó, Doppelherz Aktiv Meno là thực phẩm bảo vệ sức khỏe nhập khẩu từ Đức, chứa isoflavone, vitamin B6 và canxi, giúp hỗ trợ giảm tần suất và mức độ các triệu chứng mãn kinh.", "problem": "Bài nhắc tên và công dụng của sản phẩm nhưng thiếu câu khuyến cáo bắt buộc theo Điều 27 Nghị định 15/2018/NĐ-CP: \"Thực phẩm này không phải là thuốc, và không có tác dụng thay thế thuốc chữa bệnh\". Câu công dụng đã giữ đúng chữ \"hỗ trợ\" như bài gốc nên không vi phạm. Chữ \"nhập khẩu\" thì bài gốc không có (bài gốc chỉ ghi \"thương hiệu Doppelherz, Đức\"), tức là thông tin mới không có nguồn. Nội dung quảng cáo cũng phải trùng với bản đã được Bộ Y tế/Cục ATTP xác nhận nội dung.", "suggestion": "Bên cạnh đó, Doppelherz Aktiv Meno là thực phẩm bảo vệ sức khỏe của thương hiệu Doppelherz (Đức), chứa isoflavone, vitamin B6 và canxi, giúp hỗ trợ giảm tần suất và mức độ các triệu chứng mãn kinh.\n*Thực phẩm này không phải là thuốc, và không có tác dụng thay thế thuốc chữa bệnh."}, {"quote": "Tìm hiểu thêm về Doppelherz Aktiv Meno, thực phẩm bảo vệ sức khỏe từ Đức với isoflavone, vitamin B6 và canxi.", "problem": "Bài Pinterest nhắc tên sản phẩm mà thiếu câu khuyến cáo bắt buộc theo Điều 27 Nghị định 15/2018. Câu này lại đứng ngay sau đoạn \"Gợi ý cách cân bằng nội tiết tố nữ\" nên người đọc dễ hiểu là sản phẩm có tác dụng cân bằng nội tiết tố, một công dụng kiểu thuốc vượt quá công dụng được công bố (chỉ là hỗ trợ giảm triệu chứng mãn kinh).", "suggestion": "Tham khảo thêm Doppelherz Aktiv Meno – thực phẩm bảo vệ sức khỏe của thương hiệu Doppelherz (Đức), chứa isoflavone, vitamin B6 và canxi, giúp hỗ trợ giảm tần suất và mức độ các triệu chứng mãn kinh. Thực phẩm này không phải là thuốc, và không có tác dụng thay thế thuốc chữa bệnh."}, {"quote": "Cách cân bằng nội tiết tố nữ tuổi mãn kinh: thói quen dinh dưỡng và lối sống", "problem": "Tiêu đề khẳng định chắc chắn rằng các thói quen sẽ \"cân bằng nội tiết tố\". Trong một bài có quảng cáo thực phẩm bảo vệ sức khỏe, cách viết này dễ bị xem là ngụ ý điều trị rối loạn nội tiết. Chính sách của Pinterest cũng hạn chế các tuyên bố sức khỏe mang tính chắc chắn.", "suggestion": "Gợi ý thói quen dinh dưỡng và lối sống cho phụ nữ tuổi tiền mãn kinh, mãn kinh"}, {"quote": "Gợi ý cách cân bằng nội tiết tố nữ cho chị em ở giai đoạn tiền mãn kinh và mãn kinh:", "problem": "Cũng như tiêu đề, câu này khẳng định kết quả \"cân bằng nội tiết tố\" và gắn liền với phần giới thiệu sản phẩm ở cuối bài.", "suggestion": "Một vài thói quen giúp chị em chăm sóc sức khỏe ở giai đoạn tiền mãn kinh và mãn kinh:"}], "pin_img": "assets/pins/26078_pin.jpg"}, {"id": 40507, "title": "9. 2026-009.TB – CTKM Tết 2026.pdf", "link": "https://doppelherz.vn/9-2026-009-tb-ctkm-tet-2026-pdf/", "date": "2026-08-25", "status": "skipped", "log": ["Thông báo khuyến mại B2B cho đại lý: không đăng mạng xã hội."], "cost": 0.1951, "type": "promotion", "type_reason": "Tiêu đề '2026-009.TB – CTKM Tết 2026' là một thông báo (TB) về chương trình khuyến mại (CTKM) Tết 2026, đăng dưới dạng tệp PDF. Dạng tài liệu này thường gửi đại lý và nhà thuốc (B2B), không dành cho người tiêu dùng. Bài gốc không có tóm tắt hay nội dung nên không thể xếp vào loại khác."}], "products": 36, "model": "claude-opus-5-5", "generated_at": "2026-11-19T18:16:41.943807+07:00"};
+const L = {
+  status:{scheduled:"Đã lên lịch",approved:"Đã duyệt",pending_review:"Chờ duyệt",blocked:"Bị chặn",rejected:"Từ chối",skipped:"Bỏ qua",error:"Lỗi"},
+  type:{education:"Kiến thức",product_ad:"Quảng cáo sản phẩm",event_pr:"Sự kiện / PR",promotion:"Khuyến mại B2B"},
+  verdict:{pass:"Đạt",review:"Cần xem",block:"Chặn",needs_edit:"Cần sửa"},
+  level:{block:"Chặn",warn:"Cần xem",fix:"Đã sửa"},
+};
+const FLOW = [["scheduled","var(--green)","#fff"],["approved","var(--green)","#fff"],["pending_review","var(--amber-soft)","var(--amber)"],["blocked","var(--red)","#fff"],["rejected","var(--red-soft)","var(--red)"],["skipped","var(--grey-soft)","var(--ink2)"],["error","var(--red-soft)","var(--red)"]];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const badge = (k, map) => `<span class="badge b-${esc(k)}">${esc(map[k] || k)}</span>`;
+const fmt = d => { const t = new Date(new Date(d).getTime() + 7*3600e3); const p = n => String(n).padStart(2,"0"); return `${p(t.getUTCDate())}/${p(t.getUTCMonth()+1)} ${p(t.getUTCHours())}:${p(t.getUTCMinutes())}`; };
+
+let decisions = {};
+try { decisions = JSON.parse(localStorage.getItem("dh-decisions") || "{}"); } catch (e) {}
+const statusOf = it => decisions[it.id] || it.status;
+let filter = "all";
+
+function renderTop(){
+  const items = DATA.items, n = items.length;
+  const count = s => items.filter(i => statusOf(i) === s).length;
+  const cost = items.reduce((a,i)=>a+(i.cost||0),0);
+  const run = DATA.generated_at ? fmt(DATA.generated_at) : "";
+  document.getElementById("meta").innerHTML =
+    `<span>Chạy lúc <b>${esc(run)}</b></span><span>Mô hình <b>${esc(DATA.model)}</b></span><span>Nguồn <b>doppelherz.vn</b> · ${n} bài · ${DATA.products} sản phẩm</span>`;
+  const k = [[n,"bài đã đọc"],[count("scheduled")+count("approved"),"đã duyệt, lên lịch"],[count("pending_review"),"chờ người duyệt"],[count("blocked"),"bị chặn theo luật"],[count("skipped"),"bỏ qua (B2B)"]];
+  document.getElementById("kpis").innerHTML = k.map(([v,l])=>`<div class="kpi"><div class="n">${v}</div><div class="l">${l}</div></div>`).join("");
+  const parts = FLOW.map(([s,bg,fg])=>[s,count(s),bg,fg]).filter(p=>p[1]);
+  const flow = document.getElementById("flow");
+  flow.setAttribute("aria-label", parts.map(p=>`${L.status[p[0]]}: ${p[1]}`).join(", "));
+  flow.innerHTML = parts.map(([s,c,bg,fg])=>`<div style="flex:${c};background:${bg};color:${fg}">${c} ${L.status[s]}</div>`).join("");
+  document.getElementById("legend").innerHTML = parts.map(([s,c])=>`<span>${L.status[s]}: ${c}</span>`).join("");
+  const worked = items.filter(i => statusOf(i) !== "skipped").length;
+  document.getElementById("save").innerHTML =
+    `<div><div class="n">${worked*40} phút</div><div class="muted small">làm tay (giả định 40 phút/bài)</div></div>`+
+    `<div><div class="n">~2 phút + ${worked} lượt duyệt</div><div class="muted small">robot chạy, người chỉ đọc và bấm duyệt</div></div>`+
+    `<div><div class="n">$${cost.toFixed(2)}</div><div class="muted small">chi phí AI cho cả lần chạy (giá niêm yết)</div></div>`;
+  document.getElementById("foot").textContent = `Tạo bởi Doppelherz Content Bot · ${run}`;
+}
+
+function renderFilters(){
+  const opts = [["all","Tất cả"],["scheduled","Đã lên lịch"],["pending_review","Chờ duyệt"],["blocked","Bị chặn"],["skipped","Bỏ qua"]];
+  document.getElementById("filters").innerHTML = opts.map(([v,l])=>`<button class="chip" aria-pressed="${filter===v}" data-f="${v}">${l}</button>`).join("");
+  document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderFilters();renderQueue();});
+}
+
+function issuesList(it){
+  const rows = [
+    ...(it.issues||[]).map(i=>`<li>${badge(i.level==="fix"?"pass":i.level==="warn"?"review":"block",{pass:"Đã sửa",review:"Cần xem",block:"Chặn"})}<div><div>${esc(i.rule)}</div><div class="fix">Trích: <q>${esc(i.quote)}</q></div></div></li>`),
+    ...(it.ai_issues||[]).map(i=>`<li>${badge("review",{review:"AI pháp chế"})}<div><div><q>${esc(i.quote)}</q></div><div class="fix">${esc(i.problem)}</div><div class="fix">Đề xuất: ${esc(i.suggestion)}</div></div></li>`),
+  ];
+  return rows.length ? `<ul>${rows.join("")}</ul>` : `<div class="empty">Không phát hiện vấn đề. Vẫn cần người duyệt trước khi đăng.</div>`;
+}
+
+function itemBody(it){
+  const st = statusOf(it);
+  if (!it.fb) return `<div class="body"><p class="why">${esc((it.log||[]).join(" "))}</p>${it.type_reason?`<p class="why">Lý do phân loại: ${esc(it.type_reason)}</p>`:""}<a href="${esc(it.link)}" target="_blank" rel="noopener">Xem bài gốc</a></div>`;
+  const when = it.fb_time ? `Hẹn đăng ${fmt(it.fb_time*1000)}` : (st==="blocked" ? "Không được đăng" : "Chưa lên lịch");
+  const actions = st==="pending_review"
+    ? `<div class="actions"><button class="btn primary" data-act="approved" data-id="${it.id}">Duyệt và lên lịch</button><button class="btn" data-act="rejected" data-id="${it.id}">Từ chối</button><span class="muted small">Minh họa: chỉ lưu trong trình duyệt</span></div>`
+    : (decisions[it.id] ? `<div class="actions"><button class="btn" data-act="undo" data-id="${it.id}">Hoàn tác</button></div>` : "");
+  return `<div class="body">
+    <p class="why">${esc(it.type_reason||"")}</p>
+    <div class="grid">
+      <div class="card fb"><h4><span>Facebook Page</span><span>${esc(when)}</span></h4>
+        <div class="head"><div class="av"><svg width="22" height="17" viewBox="0 0 68 52" aria-hidden="true"><path d="M22 50C10 40 0 31 0 19 0 9 7 2 15.5 2 21 2 25 5 27.5 9 30 5 34 2 39.5 2 48 2 55 9 55 19 55 31 45 40 33 50l-5.5 2z" fill="#16130F"/><path d="M35 50C23 40 13 31 13 19 13 9 20 2 28.5 2 34 2 38 5 40.5 9 43 5 47 2 52.5 2 61 2 68 9 68 19 68 31 58 40 46 50l-5.5 2z" fill="#EC1C2D"/></svg></div>
+          <div><div class="nm">Doppelherz Việt Nam</div><div class="when">${esc(when)} · Công khai</div></div></div>
+        <div class="msg">${esc(it.fb)}</div>
+        ${it.src_img?`<img src="${esc(it.src_img)}" alt="${esc(it.alt)}" loading="lazy">`:""}
+      </div>
+      <div class="card"><h4><span>Pinterest</span><span>${it.pin_time?esc(fmt(it.pin_time)):"1000 × 1500"}</span></h4>
+        <div class="pin">${it.pin_img?`<img src="${esc(it.pin_img)}" alt="${esc(it.alt)}" loading="lazy">`:""}
+          <div class="pt">${esc(it.pin_title)}</div><div class="pd">${esc(it.pin_desc)}</div>
+          <div class="alt"><b>Alt text:</b> ${esc(it.alt)}</div></div>
+      </div>
+    </div>
+    <div class="card checks"><h4><span>Kiểm tra tuân thủ</span><span>Code: ${esc(L.verdict[it.code_verdict])} · AI: ${esc(L.verdict[it.ai_verdict])}</span></h4>${issuesList(it)}</div>
+    ${actions}
+    ${it.requests?`<details class="api"><summary>Yêu cầu API sẽ gửi (chạy thử)</summary><pre>${esc(JSON.stringify(it.requests,null,2))}</pre></details>`:""}
+    <p class="small" style="margin-top:14px"><a href="${esc(it.link)}" target="_blank" rel="noopener">Xem bài gốc trên doppelherz.vn</a></p>
+  </div>`;
+}
+
+function renderQueue(){
+  const open = new Set([...document.querySelectorAll(".row[open]")].map(d=>d.dataset.id));
+  const list = DATA.items.filter(i => filter==="all" || statusOf(i)===filter || (filter==="scheduled" && statusOf(i)==="approved"));
+  document.getElementById("queue").innerHTML = list.length ? list.map((it,i)=>`
+    <details class="row" id="bai-${it.id}" data-id="${it.id}" ${open.has(String(it.id))?"open":""}>
+      <summary>
+        <span class="idx">${i+1}</span>
+        ${it.src_img?`<img class="thumb" src="${esc(it.src_img)}" alt="" loading="lazy">`:`<span class="thumb" aria-hidden="true"></span>`}
+        <div><div class="t">${esc(it.title)}</div>
+          <div class="sub"><span class="tag">${esc(L.type[it.type]||"Không rõ")}</span><span>Đăng web ${esc(it.date.split("-").reverse().join("/"))}</span>${it.fb_time?`<span>· Facebook ${esc(fmt(it.fb_time*1000))}</span>`:""}</div></div>
+        <div class="right">${badge(statusOf(it),L.status)}<span class="chev">Xem chi tiết</span></div>
+      </summary>
+      ${itemBody(it)}
+    </details>`).join("") : `<p class="empty">Không có bài nào ở trạng thái này.</p>`;
+  document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id;
+    if (b.dataset.act==="undo") delete decisions[id]; else decisions[id]=b.dataset.act;
+    try { localStorage.setItem("dh-decisions", JSON.stringify(decisions)); } catch (e) {}
+    renderTop(); renderQueue();
+  });
+}
+
+function renderSchedule(){
+  const rows = DATA.items.filter(i=>i.fb_time).sort((a,b)=>a.fb_time-b.fb_time);
+  document.getElementById("schedule").innerHTML = `<thead><tr><th>Bài</th><th>Facebook</th><th>Pinterest</th><th>Loại</th></tr></thead><tbody>`+
+    rows.map(i=>`<tr><td>${esc(i.title)}</td><td style="white-space:nowrap">${esc(fmt(i.fb_time*1000))}</td><td style="white-space:nowrap">${esc(fmt(i.pin_time))}</td><td>${esc(L.type[i.type])}</td></tr>`).join("")+`</tbody>`;
+}
+
+renderTop(); renderFilters(); renderQueue(); renderSchedule();
+const h = location.hash.match(/^#bai-(\d+)$/);
+if (h) { const d = document.querySelector(`.row[data-id="${h[1]}"]`); if (d) { d.open = true; d.scrollIntoView(); } }
+</script>
+</body>
+</html>
