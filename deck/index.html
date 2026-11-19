@@ -34,7 +34,7 @@ body { background: #1D1916; color: var(--ink); font-family: var(--sans); font-va
 .slide::before { content: ""; position: absolute; left: 60px; right: 60px; top: 0; height: 4px; background: linear-gradient(90deg, var(--ink) 0 50%, var(--heart) 50% 100%); }
 .slide.full { grid-template-columns: 1fr; text-align: center; }
 .slide > * { min-height: 0; max-height: 100%; }
-.slide > img.shot { height: 100%; }
+.slide > img.shot { height: auto; max-height: 100%; }
 .k { font-size: 15px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-text); margin-bottom: 14px; }
 h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.015em; line-height: 1.08; text-wrap: balance; }
 h1 { font-size: 66px; }
