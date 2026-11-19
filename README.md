@@ -1,10 +1,10 @@
 # Doppelherz Content Bot
 
-Robot đồng bộ nội dung từ website doppelherz.vn sang Facebook Page và Pinterest, có kiểm tra luật quảng cáo thực phẩm bảo vệ sức khỏe và bước người duyệt. Đây là bản chạy thử cho bài test vị trí Quản lý dự án AI Claude.
+Hệ thống đồng bộ nội dung từ website doppelherz.vn sang Facebook Page và Pinterest, có kiểm tra luật quảng cáo thực phẩm bảo vệ sức khỏe và bước người duyệt. Đây là bản chạy thử cho bài test vị trí Quản lý dự án AI Claude.
 
 **Trang demo:** xem hàng đợi duyệt, bản xem trước Facebook và Pinterest, kết quả kiểm tra tuân thủ, yêu cầu API và lịch đăng tại GitHub Pages của repo này.
 
-## Robot làm gì
+## Hệ thống làm gì
 
 ```
 WordPress REST --> Claude viết --> luật trong code + Claude pháp chế --> người duyệt --> Facebook / Pinterest --> báo cáo
