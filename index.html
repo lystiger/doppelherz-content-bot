@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Doppelherz Content Bot</title>
-<meta name="description" content="Bản chạy thử robot đồng bộ nội dung Website → Facebook & Pinterest cho Doppelherz Việt Nam.">
+<meta name="description" content="Bản chạy thử hệ thống đồng bộ nội dung Website → Facebook & Pinterest cho Doppelherz Việt Nam.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
@@ -193,7 +193,7 @@ footer p{margin:4px 0}
   <div class="hero" id="tong-quan">
     <div class="eyebrow">Bản chạy thử trên dữ liệu thật</div>
     <h1>Mỗi bài trên website thành bài Facebook và pin Pinterest, trong khuôn khổ luật quảng cáo</h1>
-    <p class="lead">Robot đọc bài mới trên doppelherz.vn, nhờ Claude viết lại cho Facebook và Pinterest, kiểm tra theo Nghị định 15/2018 về quảng cáo thực phẩm bảo vệ sức khỏe, rồi chờ người duyệt trước khi lên lịch đăng.</p>
+    <p class="lead">Hệ thống đọc bài mới trên doppelherz.vn, nhờ Claude viết lại cho Facebook và Pinterest, kiểm tra theo Nghị định 15/2018 về quảng cáo thực phẩm bảo vệ sức khỏe, rồi chờ người duyệt trước khi lên lịch đăng.</p>
     <div class="meta" id="meta"></div>
   </div>
 
@@ -217,7 +217,7 @@ footer p{margin:4px 0}
   <section id="lich-dang" aria-labelledby="s-title">
     <div class="sechead"><h2 id="s-title">Lịch đăng</h2><span class="muted small">Giờ Việt Nam · Facebook 11:30 và 20:00 · Pinterest 21:00</span></div>
     <div class="tablewrap"><table id="schedule"></table></div>
-    <p class="note">Facebook nhận lịch qua Graph API v26.0 (<code>scheduled_publish_time</code>, từ 10 phút đến 30 ngày). Pinterest chưa có lịch hẹn giờ qua API nên robot giữ hàng đợi và tự đăng đúng giờ. Ở quyền Trial, pin chỉ hiện với người tạo cho tới khi Pinterest duyệt quyền Standard.</p>
+    <p class="note">Facebook nhận lịch qua Graph API v26.0 (<code>scheduled_publish_time</code>, từ 10 phút đến 30 ngày). Pinterest chưa có lịch hẹn giờ qua API nên hệ thống giữ hàng đợi và tự đăng đúng giờ. Ở quyền Trial, pin chỉ hiện với người tạo cho tới khi Pinterest duyệt quyền Standard.</p>
   </section>
 
   <section id="quy-trinh" aria-labelledby="w-title">
@@ -279,7 +279,7 @@ function renderTop(){
   const worked = items.filter(i => statusOf(i) !== "skipped").length;
   document.getElementById("save").innerHTML =
     `<div><div class="n">${worked*40} phút</div><div class="muted small">làm tay (giả định 40 phút/bài)</div></div>`+
-    `<div><div class="n">~2 phút + ${worked} lượt duyệt</div><div class="muted small">robot chạy, người chỉ đọc và bấm duyệt</div></div>`+
+    `<div><div class="n">~2 phút + ${worked} lượt duyệt</div><div class="muted small">hệ thống chạy, người chỉ đọc và bấm duyệt</div></div>`+
     `<div><div class="n">$${cost.toFixed(2)}</div><div class="muted small">chi phí AI cho cả lần chạy (giá niêm yết)</div></div>`;
   document.getElementById("foot").textContent = `Tạo bởi Doppelherz Content Bot · ${run}`;
 }
