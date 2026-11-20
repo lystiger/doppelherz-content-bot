@@ -37,7 +37,7 @@ uv venv .venv && uv pip install --python .venv/bin/python anthropic pillow pytes
 .venv/bin/python -m pytest -q tests  # kiểm thử luật, ảnh, lịch, thử lại, vòng duyệt
 ```
 
-Claude được gọi qua Claude Code CLI (`claude -p`) khi không có khóa API, hoặc qua Anthropic SDK khi có `ANTHROPIC_API_KEY`. Đổi mô hình bằng biến `BOT_MODEL`.
+Claude được gọi qua Claude Code CLI (`claude -p`) khi không có khóa API, hoặc qua Anthropic SDK khi có `ANTHROPIC_API_KEY`. Đổi mô hình bằng biến `BOT_MODEL`, hoặc tách riêng: `BOT_WRITER_MODEL` cho bước viết, `BOT_REVIEWER_MODEL` cho bước kiểm tra pháp chế (ví dụ Haiku 5.5 viết, Sonnet 5.5 kiểm tra: khoảng 0,04 USD/bài, so với 0,14 USD/bài khi dùng Opus 5.5).
 
 ## Cấu trúc
 

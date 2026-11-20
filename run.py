@@ -44,7 +44,7 @@ def now() -> datetime:
 def process(post: dict, products: list[str], previous: dict | None = None, feedback: str | None = None) -> dict:
     item = {"post": post, "log": [], "cost_usd": 0.0}
     user = prompts.redraft_user(post, previous, feedback) if feedback else prompts.writer_user(post)
-    gen, meta = llm.call_json(prompts.WRITER_SYSTEM, user, prompts.WRITER_SCHEMA)
+    gen, meta = llm.call_json(prompts.WRITER_SYSTEM, user, prompts.WRITER_SCHEMA, llm.WRITER_MODEL)
     item["generated"], item["cost_usd"] = gen, item["cost_usd"] + meta.get("cost_usd", 0)
     item["model"] = meta["model"]
 
@@ -53,8 +53,9 @@ def process(post: dict, products: list[str], previous: dict | None = None, feedb
         item["log"].append("Thông báo khuyến mại B2B cho đại lý: không đăng mạng xã hội.")
         return item
 
-    rev, meta = llm.call_json(prompts.REVIEWER_SYSTEM, prompts.reviewer_user(post, gen), prompts.REVIEWER_SCHEMA)
+    rev, meta = llm.call_json(prompts.REVIEWER_SYSTEM, prompts.reviewer_user(post, gen), prompts.REVIEWER_SCHEMA, llm.REVIEWER_MODEL)
     item["review"], item["cost_usd"] = rev, item["cost_usd"] + meta.get("cost_usd", 0)
+    item["review_model"] = meta["model"]
     item["check"] = compliance.check(item, products)
 
     if item["check"]["verdict"] == "block" or rev["verdict"] == "block":
@@ -82,7 +83,7 @@ def cmd_generate() -> None:
     known = {it["post"]["id"]: it for it in items}
     todo = [p for p in posts if p["id"] not in known or known[p["id"]]["status"] == "error"]
     print(f"  {len(posts)} bài, {len(products)} sản phẩm; {len(todo)} bài mới hoặc lỗi lần trước. "
-          f"Gọi Claude ({llm.PROVIDER}, {llm.MODEL}) ...")
+          f"Gọi Claude ({llm.PROVIDER}, viết: {llm.WRITER_MODEL}, kiểm tra: {llm.REVIEWER_MODEL}) ...")
 
     def run(p):
         try:
