@@ -74,7 +74,8 @@ section{padding:44px 0 8px;scroll-margin-top:72px}
 .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .b-scheduled,.b-approved,.b-pass{color:var(--green);background:var(--green-soft)}
 .b-pending_review,.b-review,.b-needs_edit{color:var(--amber);background:var(--amber-soft)}
-.b-blocked,.b-block,.b-rejected,.b-error{color:var(--red);background:var(--red-soft)}
+.b-needs_redraft{color:var(--amber);background:var(--amber-soft)}
+.b-blocked,.b-block,.b-rejected,.b-dropped,.b-error{color:var(--red);background:var(--red-soft)}
 .b-skipped{color:var(--ink2);background:var(--grey-soft)}
 .tag{font-size:12.5px;color:var(--gold-text);border:1px solid var(--gold);border-radius:4px;padding:1px 7px;white-space:nowrap}
 
@@ -247,7 +248,7 @@ footer p{margin:4px 0}
 <script>
 const DATA = __DATA__;
 const L = {
-  status:{scheduled:"Đã lên lịch",approved:"Đã duyệt",pending_review:"Chờ duyệt",blocked:"Bị chặn",rejected:"Từ chối",skipped:"Bỏ qua",error:"Lỗi"},
+  status:{scheduled:"Đã lên lịch",approved:"Đã duyệt",pending_review:"Chờ duyệt",blocked:"Bị chặn",rejected:"Từ chối",needs_redraft:"Chờ viết lại",dropped:"Đã loại",skipped:"Bỏ qua",error:"Lỗi"},
   type:{education:"Kiến thức",product_ad:"Quảng cáo sản phẩm",event_pr:"Sự kiện / PR",promotion:"Khuyến mại B2B"},
   verdict:{pass:"Đạt",review:"Cần xem",block:"Chặn",needs_edit:"Cần sửa"},
   level:{block:"Chặn",warn:"Cần xem",fix:"Đã sửa"},
