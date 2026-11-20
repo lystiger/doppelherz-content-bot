@@ -8,6 +8,8 @@ import json
 import re
 import urllib.request
 
+from bot.retry import with_retry
+
 BASE = "https://doppelherz.vn"
 UA = {"User-Agent": "Mozilla/5.0 (DoppelherzContentBot demo)"}
 
@@ -20,10 +22,14 @@ DEMO_SOURCES = [
 ]
 
 
-def _get(url: str):
+def _get_once(url: str):
     req = urllib.request.Request(url, headers=UA)
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
+
+
+def _get(url: str):
+    return with_retry(_get_once, url)
 
 
 def clean_text(raw_html: str) -> str:

@@ -17,9 +17,10 @@ WordPress REST --> Claude viết --> luật trong code + Claude pháp chế --> 
    - bài có tên sản phẩm được xếp là quảng cáo, tự chèn nhãn "Thực phẩm bảo vệ sức khỏe" và câu cảnh báo, và bị chặn nếu chưa có số xác nhận nội dung quảng cáo;
    - thêm dòng "Nội dung có sự hỗ trợ của AI".
 4. Claude đọc lại bản nháp cùng bài gốc như một chuyên viên pháp chế, trích câu rủi ro và đề xuất câu thay.
-5. Người duyệt bấm duyệt hoặc từ chối. Không bài nào được đăng nếu chưa duyệt.
-6. Bài đã duyệt được lên lịch: Facebook qua Graph API v26.0 (`scheduled_publish_time`), Pinterest qua API v5 (`POST /v5/pins`).
-7. Ảnh pin 1000 × 1500 được làm từ ảnh gốc của bài, không dùng AI tạo ảnh.
+5. Người duyệt bấm duyệt hoặc từ chối kèm lý do. Bài bị từ chối được Claude viết lại theo lý do rồi quay lại chờ duyệt, tối đa 2 lần; lần từ chối thứ 3 thì loại bài. Không bài nào được đăng nếu chưa duyệt.
+6. Gọi Claude và website lỗi thì thử lại 3 lần. Chạy lại `generate` giữ mọi quyết định cũ và chỉ xử lý bài mới hoặc bài lỗi lần trước.
+7. Bài đã duyệt được lên lịch: Facebook qua Graph API v26.0 (`scheduled_publish_time`), Pinterest qua API v5 (`POST /v5/pins`).
+8. Ảnh pin 1000 × 1500 được làm từ ảnh gốc của bài, không dùng AI tạo ảnh.
 
 Bản chạy thử dừng ở bước dựng yêu cầu API (dry run). Đăng thật cần Page token của Facebook và quyền Standard của Pinterest.
 
@@ -28,10 +29,12 @@ Bản chạy thử dừng ở bước dựng yêu cầu API (dry run). Đăng th
 ```bash
 uv venv .venv && uv pip install --python .venv/bin/python anthropic pillow pytest
 .venv/bin/python run.py generate     # đọc bài, gọi Claude, kiểm tra luật, làm ảnh pin
-.venv/bin/python run.py review       # duyệt trong terminal
+.venv/bin/python run.py review       # duyệt, hoặc từ chối kèm lý do
+.venv/bin/python run.py reject ID "lý do"  # từ chối không cần giao diện
+.venv/bin/python run.py redraft      # Claude viết lại bài bị từ chối theo lý do
 .venv/bin/python run.py schedule     # dựng yêu cầu Facebook và Pinterest (dry run)
 .venv/bin/python site/build.py       # dựng trang demo site/index.html
-.venv/bin/python -m pytest -q tests  # kiểm thử luật, ảnh và lịch
+.venv/bin/python -m pytest -q tests  # kiểm thử luật, ảnh, lịch, thử lại, vòng duyệt
 ```
 
 Claude được gọi qua Claude Code CLI (`claude -p`) khi không có khóa API, hoặc qua Anthropic SDK khi có `ANTHROPIC_API_KEY`. Đổi mô hình bằng biến `BOT_MODEL`.
@@ -45,6 +48,7 @@ Claude được gọi qua Claude Code CLI (`claude -p`) khi không có khóa API
 | `bot/llm.py` | Gọi Claude, trả JSON đúng schema |
 | `bot/compliance.py` | Luật quảng cáo TPBVSK chạy trong code |
 | `bot/images.py` | Ảnh pin 2:3 có tiêu đề |
+| `bot/retry.py` | Thử lại 3 lần khi gọi dịch vụ bên ngoài lỗi |
 | `bot/publish.py` | Lịch đăng và yêu cầu API Facebook, Pinterest |
 | `run.py` | Dòng lệnh điều phối |
 | `site/` | Trang demo tĩnh |

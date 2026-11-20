@@ -95,6 +95,18 @@ def writer_user(post: dict) -> str:
     )
 
 
+def redraft_user(post: dict, previous: dict, feedback: str) -> str:
+    """Writer input for a second try after a person rejected the draft."""
+    return (
+        writer_user(post)
+        + "\n\n---\nBẢN NHÁP TRƯỚC ĐÃ BỊ NGƯỜI DUYỆT TỪ CHỐI.\n"
+        + f"Lý do từ chối: {feedback}\n\n"
+        + f"Bản nháp Facebook trước:\n{previous['facebook']['message']}\n\n"
+        + f"Tiêu đề Pinterest trước: {previous['pinterest']['title']}\n\n"
+        + "Viết lại cả bài Facebook và Pinterest, sửa đúng lý do trên, vẫn giữ mọi quy tắc pháp lý."
+    )
+
+
 def reviewer_user(post: dict, gen: dict) -> str:
     return (
         f"BÀI GỐC (tiêu đề): {post['title']}\nNội dung bài gốc:\n{post['body']}\n\n"

@@ -11,14 +11,15 @@ import os
 import subprocess
 import tempfile
 
+from bot.retry import with_retry
+
 MODEL = os.environ.get("BOT_MODEL", "claude-opus-5-5")
 PROVIDER = os.environ.get("LLM_PROVIDER", "api" if os.environ.get("ANTHROPIC_API_KEY") else "claude-cli")
 
 
 def call_json(system: str, user: str, schema: dict) -> tuple[dict, dict]:
-    if PROVIDER == "api":
-        return _call_api(system, user, schema)
-    return _call_cli(system, user, schema)
+    """Up to 3 attempts; the last error is raised to the caller."""
+    return with_retry(_call_api if PROVIDER == "api" else _call_cli, system, user, schema)
 
 
 def _call_cli(system: str, user: str, schema: dict) -> tuple[dict, dict]:
